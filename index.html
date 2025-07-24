@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Position Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌙 Moon Position Tracker</h1>
+            <p>Track the moon's position in the sky based on your location and time</p>
+        </header>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="timezone">Timezone:</label>
+                <select id="timezone">
+                    <option value="">Loading timezones...</option>
+                </select>
+                <button id="detectLocationBtn" class="secondary-btn">📍 Detect My Location</button>
+            </div>
+            <div class="input-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" step="0.000001" placeholder="Will be set based on timezone" readonly>
+            </div>
+            <div class="input-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" step="0.000001" placeholder="Will be set based on timezone" readonly>
+            </div>
+            <div class="input-group">
+                <label for="datetime">Date & Time:</label>
+                <input type="datetime-local" id="datetime">
+            </div>
+            <button type="button" id="calculateBtn" class="calculate-btn">Calculate Moon Position</button>
+            <button type="button" id="testBtn" class="secondary-btn" style="margin-top: 10px;">Test vs timeanddate.com</button>
+        </div>
+
+
+
+        <div class="results" id="results" style="display: none;">
+            <div class="moon-info">
+                <h2>Moon Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Azimuth:</span>
+                        <span id="azimuth" class="value">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Altitude:</span>
+                        <span id="altitude" class="value">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Phase:</span>
+                        <span id="phase" class="value">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Distance:</span>
+                        <span id="distance" class="value">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sky-display">
+                <h2>3D Sky View</h2>
+                <div class="sky-dome">
+                    <div class="sky-hemisphere">
+                        <!-- Sky and Ground Sections -->
+                        <div class="sky-section"></div>
+                        <div class="ground-section"></div>
+                        
+                        <!-- Clear Horizon Line -->
+                        <div class="horizon-line"></div>
+                        <div class="horizon-label horizon-label-left">HORIZON</div>
+                        <div class="horizon-label horizon-label-right">0°</div>
+                        
+                        <!-- Altitude Rings (only in sky section) -->
+                        <div class="altitude-ring altitude-30"></div>
+                        <div class="altitude-ring altitude-60"></div>
+                        <div class="altitude-ring altitude-90"></div>
+                        
+                        <!-- Altitude Labels -->
+                        <div class="altitude-label altitude-30-label">30°</div>
+                        <div class="altitude-label altitude-60-label">60°</div>
+                        <div class="altitude-label altitude-90-label">90°</div>
+                        
+                        <!-- Azimuth Lines -->
+                        <div class="azimuth-line azimuth-north"></div>
+                        <div class="azimuth-line azimuth-east"></div>
+                        <div class="azimuth-line azimuth-south"></div>
+                        <div class="azimuth-line azimuth-west"></div>
+                        
+                        <!-- Moon Position -->
+                        <div class="moon-position" id="moonPosition"></div>
+                    </div>
+                    
+                    <!-- Cardinal Directions (outside hemisphere to avoid clipping) -->
+                    <div class="direction north">N</div>
+                    <div class="direction east">E</div>
+                    <div class="direction south">S</div>
+                    <div class="direction west">W</div>
+                    
+                    <!-- Ground Plane - REMOVED -->
+                </div>
+                
+                <!-- Legend -->
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #2a5298;"></span>
+                        <span>Horizon Line (0° altitude)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: rgba(42, 82, 152, 0.4);"></span>
+                        <span>30°, 60°, 90° altitude rings</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #FFD700, #FFA500);"></span>
+                        <span>Moon position</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #4682B4;"></span>
+                        <span>Ground (below horizon)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

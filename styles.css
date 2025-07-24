@@ -1,0 +1,467 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.controls {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2a5298;
+}
+
+.input-group input,
+.input-group select {
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #2a5298;
+}
+
+.input-group input[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.secondary-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 8px;
+}
+
+.secondary-btn:hover {
+    background: #5a6268;
+}
+
+#calculateBtn {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#calculateBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(42, 82, 152, 0.4);
+}
+
+.results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.moon-info, .sky-display {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.moon-info h2, .sky-display h2 {
+    color: #2a5298;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.label {
+    font-weight: 600;
+    color: #2a5298;
+}
+
+.value {
+    font-weight: 500;
+    color: #333;
+}
+
+/* 3D Sky Dome */
+.sky-dome {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.sky-hemisphere {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, 
+        #87CEEB 0%, 
+        #E0F6FF 30%, 
+        #F0F8FF 60%, 
+        #FFFFFF 100%);
+    border: 3px solid #2a5298;
+    transform-style: preserve-3d;
+    box-shadow: 
+        inset 0 0 50px rgba(135, 206, 235, 0.3),
+        0 10px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+/* Clear Horizon Line */
+.horizon-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        #2a5298 20%, 
+        #2a5298 80%, 
+        transparent 100%);
+    z-index: 5;
+    box-shadow: 
+        0 0 10px rgba(42, 82, 152, 0.8),
+        0 0 20px rgba(42, 82, 152, 0.4);
+}
+
+/* Horizon Labels */
+.horizon-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #2a5298;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.horizon-label-left {
+    left: 10px;
+}
+
+.horizon-label-right {
+    right: 10px;
+}
+
+/* Sky and Ground Separation */
+.sky-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: radial-gradient(ellipse at center bottom, 
+        #87CEEB 0%, 
+        #E0F6FF 50%, 
+        #F0F8FF 100%);
+    z-index: 1;
+}
+
+.ground-section {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, 
+        #4682B4 0%, 
+        #5F9EA0 50%, 
+        #87CEEB 100%);
+    z-index: 1;
+}
+
+/* Altitude Rings (only in sky section) */
+.altitude-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 2px solid rgba(42, 82, 152, 0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.altitude-30 {
+    width: 60%;
+    height: 60%;
+}
+
+.altitude-60 {
+    width: 40%;
+    height: 40%;
+}
+
+.altitude-90 {
+    width: 20%;
+    height: 20%;
+}
+
+/* Altitude Labels */
+.altitude-label {
+    position: absolute;
+    background: rgba(42, 82, 152, 0.9);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    z-index: 3;
+}
+
+.altitude-30-label {
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.altitude-60-label {
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.altitude-90-label {
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Cardinal Directions */
+.direction {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.north {
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.south {
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.east {
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.west {
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Moon Position */
+.moon-position {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 0 40px rgba(255, 215, 0, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+    z-index: 6;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.moon-position::before {
+    content: "🌙";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+/* Azimuth Lines */
+.azimuth-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 50%;
+    background: linear-gradient(to top, rgba(42, 82, 152, 0.8), transparent);
+    transform-origin: bottom center;
+    z-index: 2;
+}
+
+.azimuth-north { transform: translateX(-50%) rotate(0deg); }
+.azimuth-east { transform: translateX(-50%) rotate(90deg); }
+.azimuth-south { transform: translateX(-50%) rotate(180deg); }
+.azimuth-west { transform: translateX(-50%) rotate(270deg); }
+
+/* Legend */
+.legend {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .results {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .sky-dome {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .direction {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .moon-position {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .moon-position::before {
+        font-size: 16px;
+    }
+    
+    .horizon-label {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+}
+
+/* Animation for moon movement */
+@keyframes moonGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.6); }
+}
+
+.moon-position.visible {
+    animation: moonGlow 3s ease-in-out infinite;
+} 
