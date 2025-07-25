@@ -691,17 +691,27 @@ class MoonPositionCalculator {
             }
             
             const data = await response.json();
-            console.log('API Response:', data);
+            console.log('API Response:', JSON.stringify(data, null, 2));
             
             // Parse the response based on timeanddate.com API documentation
+            console.log('Checking response structure...');
+            console.log('Has locations:', !!data.locations);
+            console.log('Locations length:', data.locations ? data.locations.length : 'undefined');
+            
             if (data.locations && data.locations.length > 0) {
                 const location = data.locations[0];
+                console.log('First location:', location);
+                console.log('Has astronomy:', !!location.astronomy);
+                
                 if (location.astronomy && location.astronomy.objects) {
+                    console.log('Astronomy objects:', location.astronomy.objects);
                     // Find the moon object
                     const moonObject = location.astronomy.objects.find(obj => obj.name === 'moon');
+                    console.log('Moon object found:', !!moonObject);
                     
                     if (moonObject && moonObject.results && moonObject.results.length > 0) {
                         const moonData = moonObject.results[0];
+                        console.log('Moon data:', moonData);
                         return {
                             azimuth: parseFloat(moonData.azimuth),
                             altitude: parseFloat(moonData.altitude),
@@ -712,6 +722,12 @@ class MoonPositionCalculator {
                         };
                     }
                 }
+            }
+            
+            // If we get here, log the full response structure for debugging
+            console.log('Full API response structure:', Object.keys(data));
+            if (data.errors) {
+                console.log('API Errors:', data.errors);
             }
             
             throw new Error('No moon data found in API response');
