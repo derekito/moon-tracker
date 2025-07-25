@@ -680,7 +680,8 @@ class MoonPositionCalculator {
             const corsProxies = [
                 'https://api.allorigins.win/raw?url=',
                 'https://corsproxy.io/?',
-                'https://thingproxy.freeboard.io/fetch/'
+                'https://thingproxy.freeboard.io/fetch/',
+                'https://cors-anywhere.herokuapp.com/'
             ];
             
             let lastError = null;
@@ -688,7 +689,7 @@ class MoonPositionCalculator {
             for (const proxy of corsProxies) {
                 try {
                     const apiUrl = `https://api.xmltime.com/astro?${apiParams}`;
-                    const url = proxy + encodeURIComponent(apiUrl);
+                    const url = proxy + encodeURIComponent(apiUrl) + '&_t=' + Date.now();
                     
                     console.log(`Trying CORS proxy: ${proxy}`);
                     console.log('Calling timeanddate.com API via CORS proxy:', url);
