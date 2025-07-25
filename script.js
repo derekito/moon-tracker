@@ -665,6 +665,7 @@ class MoonPositionCalculator {
             const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD format
             
             // Build API request URL for timeanddate.com
+            // Based on the API documentation, we need to use the correct endpoint and format
             const apiParams = new URLSearchParams({
                 version: '3',
                 prettyprint: '1',
@@ -673,7 +674,8 @@ class MoonPositionCalculator {
                 placeid: `${lat},${lon}`,
                 startdt: dateStr,
                 enddt: dateStr + 'T23:59:59',
-                object: 'moon'
+                object: 'moon',
+                types: 'astro' // Specify we want astronomical data
             });
             
             // Try multiple CORS proxies in case one fails
@@ -681,58 +683,79 @@ class MoonPositionCalculator {
                 'https://api.allorigins.win/raw?url=',
                 'https://corsproxy.io/?',
                 'https://thingproxy.freeboard.io/fetch/',
-                'https://cors-anywhere.herokuapp.com/'
+                'https://cors-anywhere.herokuapp.com/',
+                'https://cors.bridged.cc/'
             ];
             
             let lastError = null;
             
-            for (const proxy of corsProxies) {
+                        for (const proxy of corsProxies) {
                 try {
-                    const apiUrl = `https://api.xmltime.com/astro?${apiParams}`;
-                    const url = proxy + encodeURIComponent(apiUrl) + '&_t=' + Date.now();
-                    
                     console.log(`Trying CORS proxy: ${proxy}`);
-                    console.log('Calling timeanddate.com API via CORS proxy:', url);
                     
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Origin': window.location.origin,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
+                    // Try different API endpoint formats
+                    const apiUrls = [
+                        `https://api.xmltime.com/astro?${apiParams}`,
+                        `https://api.xmltime.com/astronomy?${apiParams}`,
+                        `https://api.xmltime.com/astro/position?${apiParams}`
+                    ];
                     
-                    if (!response.ok) {
-                        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('API Response:', data);
-                    
-                    // Extract moon position data
-                    if (data.locations && data.locations.length > 0) {
-                        const location = data.locations[0];
-                        if (location.astrodata && location.astrodata.length > 0) {
-                            // Find the moon data for the specific time
-                            const moonData = location.astrodata.find(item => 
-                                item.object === 'moon' && 
-                                item.time && 
-                                item.time.iso
-                            );
+                    for (const apiUrl of apiUrls) {
+                        try {
+                            const url = proxy + encodeURIComponent(apiUrl) + '&_t=' + Date.now();
                             
-                            if (moonData) {
-                                return {
-                                    azimuth: parseFloat(moonData.azimuth),
-                                    altitude: parseFloat(moonData.altitude),
-                                    distance: parseFloat(moonData.distance) * 1.60934, // Convert miles to km
-                                    phase: moonData.phase || 'Unknown',
-                                    source: 'timeanddate.com API'
-                                };
+                            console.log(`Trying API URL: ${apiUrl}`);
+                            console.log('Calling timeanddate.com API via CORS proxy:', url);
+                            
+                            const response = await fetch(url, {
+                                method: 'GET',
+                                headers: {
+                                    'Origin': window.location.origin,
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
                             }
+                            
+                            const data = await response.json();
+                            console.log('API Response:', data);
+                            
+                            // Extract moon position data
+                            if (data.locations && data.locations.length > 0) {
+                                const location = data.locations[0];
+                                if (location.astrodata && location.astrodata.length > 0) {
+                                    // Find the moon data for the specific time
+                                    const moonData = location.astrodata.find(item => 
+                                        item.object === 'moon' && 
+                                        item.time && 
+                                        item.time.iso
+                                    );
+                                    
+                                    if (moonData) {
+                                        return {
+                                            azimuth: parseFloat(moonData.azimuth),
+                                            altitude: parseFloat(moonData.altitude),
+                                            distance: parseFloat(moonData.distance) * 1.60934, // Convert miles to km
+                                            phase: moonData.phase || 'Unknown',
+                                            source: 'timeanddate.com API'
+                                        };
+                                    }
+                                }
+                            }
+                            
+                            // If we get here, no valid data found
+                            throw new Error('No moon data found in API response');
+                            
+                        } catch (error) {
+                            console.log(`API URL ${apiUrl} failed:`, error.message);
+                            continue; // Try next API URL
                         }
                     }
                     
-                    throw new Error('No moon data found in API response');
+                    // If all API URLs failed for this proxy, try next proxy
+                    throw new Error('All API endpoints failed for this proxy');
                     
                 } catch (error) {
                     console.log(`CORS proxy ${proxy} failed:`, error.message);
