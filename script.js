@@ -675,9 +675,30 @@ class MoonPositionCalculator {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Build the timeanddate.com API URL
+            // First, we need to get a place ID for the coordinates
+            const placeUrl = `https://api.xmltime.com/places?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&query=${lat},${lon}&types=place`;
+            const placeProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(placeUrl)}`;
+            
+            console.log('Getting place ID from:', placeUrl);
+            
+            const placeResponse = await fetch(placeProxyUrl);
+            if (!placeResponse.ok) {
+                throw new Error(`Place lookup failed: ${placeResponse.status} ${placeResponse.statusText}`);
+            }
+            
+            const placeData = await placeResponse.json();
+            console.log('Place lookup response:', JSON.stringify(placeData, null, 2));
+            
+            if (!placeData.places || placeData.places.length === 0) {
+                throw new Error('No place found for coordinates');
+            }
+            
+            const placeId = placeData.places[0].id;
+            console.log('Using place ID:', placeId);
+            
+            // Now get the astronomical data using the place ID
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
-            const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${lat},${lon}&object=moon&interval=${interval}&isotime=1&utctime=1`;
+            const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${interval}&isotime=1&utctime=1`;
             
             console.log('Calling timeanddate.com API via proxy:', apiUrl);
             
