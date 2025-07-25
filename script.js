@@ -616,6 +616,20 @@ class MoonPositionCalculator {
             if (moonInfoSection) {
                 moonInfoSection.innerHTML = tableHTML;
                 console.log('Directly replaced moon-info content');
+                
+                // IMMEDIATE VISUAL DEBUG: Force the table to be visible and add a border
+                const enhancedTable = moonInfoSection.querySelector('.enhanced-moon-info');
+                if (enhancedTable) {
+                    enhancedTable.style.border = '3px solid red';
+                    enhancedTable.style.backgroundColor = 'yellow';
+                    enhancedTable.style.padding = '20px';
+                    enhancedTable.style.margin = '20px';
+                    console.log('=== FORCED VISIBILITY DEBUG ===');
+                    console.log('Enhanced table found and styled for visibility');
+                    console.log('Enhanced table innerHTML:', enhancedTable.innerHTML.substring(0, 300));
+                } else {
+                    console.log('ERROR: No enhanced-moon-info found after replacement!');
+                }
             } else {
                 // Fallback: create new element if none exists
                 const enhancedInfo = document.createElement('div');
@@ -678,6 +692,12 @@ class MoonPositionCalculator {
             console.log('Enhanced moon-info CSS opacity:', computedStyle.opacity);
         }
         
+        // IMPORTANT: Make sure the results div is visible
+        resultsDiv.style.display = 'block';
+        console.log('=== RESULTS VISIBILITY DEBUG ===');
+        console.log('Results div display style:', resultsDiv.style.display);
+        console.log('Results div computed display:', window.getComputedStyle(resultsDiv).display);
+        
         // Add data source information
         const sourceText = moonData.source || 'High-accuracy local calculation';
         const sourceElement = document.createElement('p');
@@ -706,7 +726,6 @@ class MoonPositionCalculator {
         // Don't append enhancedInfo again since we already replaced/added it
         resultsDiv.appendChild(sourceElement);
         resultsDiv.appendChild(locationElement);
-        resultsDiv.style.display = 'block';
         
         // Test: Try to update the original table elements directly as backup
         console.log('=== BACKUP TEST: Updating original table elements ===');
