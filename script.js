@@ -634,40 +634,8 @@ class MoonPositionCalculator {
                 moonInfoSection.innerHTML = tableHTML;
                 console.log('Directly replaced moon-info content');
                 
-                // IMMEDIATE VISUAL DEBUG: Force the table to be visible and add a border
-                const enhancedTable = moonInfoSection.querySelector('.enhanced-moon-info');
-                if (enhancedTable) {
-                    enhancedTable.style.border = '3px solid red';
-                    enhancedTable.style.backgroundColor = '#4682B4';
-                    enhancedTable.style.padding = '20px';
-                    enhancedTable.style.margin = '20px';
-                    enhancedTable.style.zIndex = '9999';
-                    enhancedTable.style.position = 'relative';
-                    console.log('=== FORCED VISIBILITY DEBUG ===');
-                    console.log('Enhanced table found and styled for visibility');
-                    console.log('Enhanced table innerHTML:', enhancedTable.innerHTML.substring(0, 300));
-                    
-                    // Also style the parent moon-info section
-                    moonInfoSection.style.border = '3px solid blue';
-                    moonInfoSection.style.backgroundColor = '#87CEEB';
-                    moonInfoSection.style.padding = '10px';
-                    console.log('Parent moon-info section also styled for visibility');
-                    
-                    // Force text color and visibility
-                    const allTextElements = enhancedTable.querySelectorAll('*');
-                    allTextElements.forEach(el => {
-                        el.style.color = 'black';
-                        el.style.visibility = 'visible';
-                        el.style.display = 'block';
-                    });
-                    console.log('Forced all text elements to be black and visible');
-                    
-                    // Keep debugging styles permanently to ensure visibility
-                    console.log('Keeping debugging styles to ensure table visibility');
-                } else {
-                    console.log('ERROR: No enhanced-moon-info found after replacement!');
-                    console.log('Available elements in moonInfoSection:', moonInfoSection.innerHTML.substring(0, 500));
-                }
+                // Remove debugging styles - table should be visible by default
+                console.log('Table created successfully - no debugging styles needed');
             } else {
                 // Fallback: create new element if none exists
                 const enhancedInfo = document.createElement('div');
@@ -898,8 +866,8 @@ class MoonPositionCalculator {
             moonPosition.style.filter = 'grayscale(60%) brightness(0.7)'; // Less dark
             moonPosition.title = `Moon is below horizon (${altitude.toFixed(1)}°) - Not visible`;
             moonPosition.classList.remove('visible');
-            // Add a red border to make it more visible for debugging
-            moonPosition.style.border = '2px solid red';
+            // Add a subtle border to indicate below horizon position
+            moonPosition.style.border = '1px solid rgba(70, 130, 180, 0.6)';
         } else if (altitude < 10) {
             moonPosition.style.opacity = '0.6';
             moonPosition.style.filter = 'grayscale(30%)';
