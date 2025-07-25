@@ -636,7 +636,7 @@ class MoonPositionCalculator {
                 const enhancedTable = moonInfoSection.querySelector('.enhanced-moon-info');
                 if (enhancedTable) {
                     enhancedTable.style.border = '3px solid red';
-                    enhancedTable.style.backgroundColor = 'yellow';
+                    enhancedTable.style.backgroundColor = '#4682B4';
                     enhancedTable.style.padding = '20px';
                     enhancedTable.style.margin = '20px';
                     enhancedTable.style.zIndex = '9999';
@@ -647,7 +647,7 @@ class MoonPositionCalculator {
                     
                     // Also style the parent moon-info section
                     moonInfoSection.style.border = '3px solid blue';
-                    moonInfoSection.style.backgroundColor = 'lightgreen';
+                    moonInfoSection.style.backgroundColor = '#87CEEB';
                     moonInfoSection.style.padding = '10px';
                     console.log('Parent moon-info section also styled for visibility');
                     
@@ -913,8 +913,8 @@ class MoonPositionCalculator {
         // Add dynamic shadow based on altitude
         const shadowIntensity = Math.max(0.1, altitude / 90);
         moonPosition.style.boxShadow = `
-            0 0 ${20 * shadowIntensity}px rgba(255, 215, 0, ${0.8 * shadowIntensity}),
-            0 0 ${40 * shadowIntensity}px rgba(255, 215, 0, ${0.4 * shadowIntensity}),
+            0 0 ${20 * shadowIntensity}px rgba(70, 130, 180, ${0.8 * shadowIntensity}),
+            0 0 ${40 * shadowIntensity}px rgba(70, 130, 180, ${0.4 * shadowIntensity}),
             inset 0 0 10px rgba(255, 255, 255, 0.3)
         `;
         
