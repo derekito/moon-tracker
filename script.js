@@ -577,6 +577,23 @@ class MoonPositionCalculator {
         
         // Create template with error handling
         try {
+            // Pre-calculate all values to ensure they exist
+            const directionValue = moonData.azimuth ? `${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑` : 'N/A';
+            const altitudeValue = moonData.altitude ? `${moonData.altitude.toFixed(1)}°` : 'N/A';
+            const distanceValue = moonData.distance ? `${moonData.distance.toFixed(0)} km` : 'N/A';
+            const phaseValue = moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A';
+            const illuminatedValue = moonData.illuminated ? `${moonData.illuminated.toFixed(1)}%` : 'N/A';
+            const statusValue = moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A';
+            
+            console.log('Pre-calculated values:', {
+                directionValue,
+                altitudeValue,
+                distanceValue,
+                phaseValue,
+                illuminatedValue,
+                statusValue
+            });
+            
             enhancedInfo.innerHTML = `
                 <h2>Moon Information</h2>
                 <div class="enhanced-moon-info">
@@ -584,22 +601,22 @@ class MoonPositionCalculator {
                         <h4>Moon Details</h4>
                         <div class="info-grid">
                             <div class="info-item">
-                                <strong>Direction:</strong> ${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}
+                                <strong>Direction:</strong> ${directionValue}
                             </div>
                             <div class="info-item">
-                                <strong>Altitude:</strong> ${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}
+                                <strong>Altitude:</strong> ${altitudeValue}
                             </div>
                             <div class="info-item">
-                                <strong>Distance:</strong> ${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}
+                                <strong>Distance:</strong> ${distanceValue}
                             </div>
                             <div class="info-item">
-                                <strong>Phase:</strong> ${moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A'}
+                                <strong>Phase:</strong> ${phaseValue}
                             </div>
                             <div class="info-item">
-                                <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
+                                <strong>Illuminated:</strong> ${illuminatedValue}
                             </div>
                             <div class="info-item">
-                                <strong>Status:</strong> ${moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A'}
+                                <strong>Status:</strong> ${statusValue}
                             </div>
                         </div>
                     </div>
