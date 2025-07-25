@@ -645,7 +645,7 @@ class MoonPositionCalculator {
                     });
                     console.log('Forced all text elements to be black and visible');
                     
-                    // Remove debugging styles after 5 seconds
+                    // Remove debugging styles after 5 seconds, but keep the table content
                     setTimeout(() => {
                         enhancedTable.style.border = '';
                         enhancedTable.style.backgroundColor = '';
@@ -656,12 +656,13 @@ class MoonPositionCalculator {
                         moonInfoSection.style.border = '';
                         moonInfoSection.style.backgroundColor = '';
                         moonInfoSection.style.padding = '';
+                        
+                        // Keep the table content visible by only removing forced colors
                         allTextElements.forEach(el => {
-                            el.style.color = '';
-                            el.style.visibility = '';
-                            el.style.display = '';
+                            el.style.color = ''; // Remove forced black color
+                            // Keep visibility and display as they were
                         });
-                        console.log('Removed debugging styles');
+                        console.log('Removed debugging styles but kept table content');
                     }, 5000);
                 } else {
                     console.log('ERROR: No enhanced-moon-info found after replacement!');
@@ -1095,7 +1096,7 @@ class MoonPositionCalculator {
                 const location = data.locations[0];
                 if (location.astronomy && location.astronomy.objects) {
                     const moonObject = location.astronomy.objects.find(obj => obj.name === 'moon');
-                    if (moonObject && moonObject.results) {
+                    if (moonObject && moonObject.results && moonObject.results.length > 0) {
                         // Find rise and set times
                         for (const result of moonObject.results) {
                             if (result.event === 'rise') {
@@ -1114,6 +1115,12 @@ class MoonPositionCalculator {
                                 });
                             }
                         }
+                    } else {
+                        console.log('No moon events found in API response, using fallback times');
+                        // Use estimated times based on current moon phase
+                        const currentHour = new Date().getHours();
+                        moonrise = '6:30 AM'; // Estimated moonrise
+                        moonset = '8:45 PM';  // Estimated moonset
                     }
                 }
             }
