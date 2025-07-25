@@ -869,7 +869,10 @@ class MoonPositionCalculator {
             y = domeSize / 2 - radius * Math.sin(azimuthRad);
         } else {
             // Moon is below horizon - position in lower half
-            y = domeSize / 2 + radius * Math.sin(azimuthRad);
+            // Ensure it stays within the visible area (not at top: 0px)
+            y = domeSize / 2 + Math.abs(radius * Math.sin(azimuthRad));
+            // Add some padding to keep it visible
+            y = Math.min(y, domeSize - 50); // Keep it 50px from bottom
         }
         
         // Calculate z-depth for 3D effect (higher altitude = closer to viewer)
@@ -879,7 +882,8 @@ class MoonPositionCalculator {
         const minPos = moonSize / 2;
         const maxPos = domeSize - moonSize / 2;
         const clampedX = Math.max(minPos, Math.min(maxPos, x));
-        const clampedY = Math.max(minPos, Math.min(maxPos, y));
+        // For Y, allow more range for below-horizon positioning
+        const clampedY = Math.max(50, Math.min(maxPos, y)); // Minimum 50px from top
         
         // Apply 3D positioning
         moonPosition.style.left = `${clampedX - moonSize / 2}px`;
