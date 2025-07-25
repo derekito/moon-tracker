@@ -676,10 +676,10 @@ class MoonPositionCalculator {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Use coordinates directly as placeid - format according to API docs
-            // Format: +latitude+longitude (no comma, with signs)
-            const placeId = `${lat >= 0 ? '+' : ''}${lat}${lon >= 0 ? '+' : ''}${lon}`;
-            console.log('Using coordinates as placeid:', placeId);
+            // Try using a known place name instead of coordinates
+            // Los Angeles is a well-known location that should work
+            const placeId = 'usa/los-angeles';
+            console.log('Using place name as placeid:', placeId);
             
             // Now get the astronomical data using the place ID
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
