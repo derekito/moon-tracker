@@ -660,25 +660,8 @@ class MoonPositionCalculator {
                     });
                     console.log('Forced all text elements to be black and visible');
                     
-                    // Remove debugging styles after 5 seconds, but keep the table content
-                    setTimeout(() => {
-                        enhancedTable.style.border = '';
-                        enhancedTable.style.backgroundColor = '';
-                        enhancedTable.style.padding = '';
-                        enhancedTable.style.margin = '';
-                        enhancedTable.style.zIndex = '';
-                        enhancedTable.style.position = '';
-                        moonInfoSection.style.border = '';
-                        moonInfoSection.style.backgroundColor = '';
-                        moonInfoSection.style.padding = '';
-                        
-                        // Keep the table content visible by only removing forced colors
-                        allTextElements.forEach(el => {
-                            el.style.color = ''; // Remove forced black color
-                            // Keep visibility and display as they were
-                        });
-                        console.log('Removed debugging styles but kept table content');
-                    }, 5000);
+                    // Keep debugging styles permanently to ensure visibility
+                    console.log('Keeping debugging styles to ensure table visibility');
                 } else {
                     console.log('ERROR: No enhanced-moon-info found after replacement!');
                     console.log('Available elements in moonInfoSection:', moonInfoSection.innerHTML.substring(0, 500));
@@ -888,10 +871,12 @@ class MoonPositionCalculator {
         
         // Add visual indicators for altitude and visibility
         if (altitude < 0) {
-            moonPosition.style.opacity = '0.1';
-            moonPosition.style.filter = 'grayscale(80%) brightness(0.5)';
+            moonPosition.style.opacity = '0.3'; // Increased from 0.1 to make it more visible
+            moonPosition.style.filter = 'grayscale(60%) brightness(0.7)'; // Less dark
             moonPosition.title = `Moon is below horizon (${altitude.toFixed(1)}°) - Not visible`;
             moonPosition.classList.remove('visible');
+            // Add a red border to make it more visible for debugging
+            moonPosition.style.border = '2px solid red';
         } else if (altitude < 10) {
             moonPosition.style.opacity = '0.6';
             moonPosition.style.filter = 'grayscale(30%)';
