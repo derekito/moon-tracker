@@ -543,6 +543,18 @@ class MoonPositionCalculator {
         
         console.log('Found moon-info section:', !!moonInfoSection);
         
+        // Test: Check the original structure
+        if (moonInfoSection) {
+            console.log('Original moon-info innerHTML length:', moonInfoSection.innerHTML.length);
+            console.log('Original moon-info contains basic table:', moonInfoSection.innerHTML.includes('info-grid'));
+            console.log('Original moon-info contains basic fields:', {
+                hasAzimuth: moonInfoSection.innerHTML.includes('azimuth'),
+                hasAltitude: moonInfoSection.innerHTML.includes('altitude'),
+                hasPhase: moonInfoSection.innerHTML.includes('phase'),
+                hasDistance: moonInfoSection.innerHTML.includes('distance')
+            });
+        }
+        
         // Create enhanced information display
         const enhancedInfo = document.createElement('div');
         enhancedInfo.className = 'moon-info';
@@ -627,9 +639,39 @@ class MoonPositionCalculator {
         if (moonInfoSection) {
             console.log('Replacing existing moon-info section');
             moonInfoSection.replaceWith(enhancedInfo);
+            
+            // Test: Check if the replacement worked
+            const newMoonInfo = resultsDiv.querySelector('.moon-info');
+            console.log('After replacement - found moon-info section:', !!newMoonInfo);
+            if (newMoonInfo) {
+                console.log('New moon-info innerHTML length:', newMoonInfo.innerHTML.length);
+                console.log('New moon-info contains "Direction":', newMoonInfo.innerHTML.includes('Direction'));
+                console.log('New moon-info contains "380472":', newMoonInfo.innerHTML.includes('380472'));
+            }
         } else {
             console.log('No moon-info section found, appending to results');
             resultsDiv.appendChild(enhancedInfo);
+            
+            // Test: Check if the append worked
+            const newMoonInfo = resultsDiv.querySelector('.moon-info');
+            console.log('After append - found moon-info section:', !!newMoonInfo);
+        }
+        
+        // Test: Check final state of results div
+        console.log('Final results div children count:', resultsDiv.children.length);
+        console.log('Final results div contains moon-info:', !!resultsDiv.querySelector('.moon-info'));
+        
+        // Test: Check if the enhanced-moon-info class exists
+        const enhancedMoonInfo = resultsDiv.querySelector('.enhanced-moon-info');
+        console.log('Found enhanced-moon-info section:', !!enhancedMoonInfo);
+        if (enhancedMoonInfo) {
+            console.log('Enhanced moon-info innerHTML length:', enhancedMoonInfo.innerHTML.length);
+            console.log('Enhanced moon-info contains data fields:', {
+                hasDirection: enhancedMoonInfo.innerHTML.includes('Direction'),
+                hasAltitude: enhancedMoonInfo.innerHTML.includes('Altitude'),
+                hasDistance: enhancedMoonInfo.innerHTML.includes('Distance'),
+                hasPhase: enhancedMoonInfo.innerHTML.includes('Phase')
+            });
         }
         
         // Add data source information
@@ -661,6 +703,31 @@ class MoonPositionCalculator {
         resultsDiv.appendChild(sourceElement);
         resultsDiv.appendChild(locationElement);
         resultsDiv.style.display = 'block';
+        
+        // Test: Try to update the original table elements directly as backup
+        console.log('=== BACKUP TEST: Updating original table elements ===');
+        const azimuthElement = document.getElementById('azimuth');
+        const altitudeElement = document.getElementById('altitude');
+        const phaseElement = document.getElementById('phase');
+        const distanceElement = document.getElementById('distance');
+        
+        console.log('Found original elements:', {
+            azimuth: !!azimuthElement,
+            altitude: !!altitudeElement,
+            phase: !!phaseElement,
+            distance: !!distanceElement
+        });
+        
+        if (azimuthElement && altitudeElement && phaseElement && distanceElement) {
+            console.log('Updating original table elements with data');
+            azimuthElement.textContent = `${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}`;
+            altitudeElement.textContent = `${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}`;
+            phaseElement.textContent = moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A';
+            distanceElement.textContent = `${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}`;
+            console.log('Original table elements updated');
+        } else {
+            console.log('Original table elements not found - enhanced display should be used');
+        }
     }
 
     updateMoonPosition3D(azimuth, altitude) {
