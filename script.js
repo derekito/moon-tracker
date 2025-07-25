@@ -644,6 +644,25 @@ class MoonPositionCalculator {
                         el.style.display = 'block';
                     });
                     console.log('Forced all text elements to be black and visible');
+                    
+                    // Remove debugging styles after 5 seconds
+                    setTimeout(() => {
+                        enhancedTable.style.border = '';
+                        enhancedTable.style.backgroundColor = '';
+                        enhancedTable.style.padding = '';
+                        enhancedTable.style.margin = '';
+                        enhancedTable.style.zIndex = '';
+                        enhancedTable.style.position = '';
+                        moonInfoSection.style.border = '';
+                        moonInfoSection.style.backgroundColor = '';
+                        moonInfoSection.style.padding = '';
+                        allTextElements.forEach(el => {
+                            el.style.color = '';
+                            el.style.visibility = '';
+                            el.style.display = '';
+                        });
+                        console.log('Removed debugging styles');
+                    }, 5000);
                 } else {
                     console.log('ERROR: No enhanced-moon-info found after replacement!');
                     console.log('Available elements in moonInfoSection:', moonInfoSection.innerHTML.substring(0, 500));
@@ -887,13 +906,13 @@ class MoonPositionCalculator {
             clampedX: clampedX,
             clampedY: clampedY,
             zDepth: zDepth,
-            finalPosition: {
-                left: `${clampedX - moonSize / 2}px`,
-                top: `${clampedY - moonSize / 2}px`,
-                opacity: moonPosition.style.opacity,
-                visibility: altitude >= 0 ? 'above horizon' : 'below horizon',
-                section: y < domeSize / 2 ? 'upper half (sky)' : 'lower half (ground)'
-            }
+            moonPositionFound: !!moonPosition,
+            moonPositionStyle: moonPosition ? {
+                left: moonPosition.style.left,
+                top: moonPosition.style.top,
+                transform: moonPosition.style.transform,
+                opacity: moonPosition.style.opacity
+            } : 'No moon position element'
         });
     }
 
@@ -1032,8 +1051,8 @@ class MoonPositionCalculator {
             const today = new Date();
             const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
             
-            // Use the correct astronomy endpoint for moon events
-            const riseSetUrl = `https://api.xmltime.com/astronomy?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&startdt=${todayStr}&enddt=${todayStr}&types=rise,set&isotime=1&utctime=1`;
+            // Use the correct astrodata endpoint for moon events
+            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&startdt=${todayStr}&enddt=${todayStr}&types=rise,set&isotime=1&utctime=1`;
             
             console.log('Getting moon events from API:', riseSetUrl);
             
