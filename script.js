@@ -521,6 +521,15 @@ class MoonPositionCalculator {
         // Get the results container
         const resultsDiv = document.getElementById('results');
         
+        // Debug: Log the moon data to see what we have
+        console.log('Displaying moon data:', moonData);
+        console.log('Moon events data:', {
+            moonrise: moonData.moonrise,
+            moonset: moonData.moonset,
+            nextFullMoon: moonData.nextFullMoon,
+            nextNewMoon: moonData.nextNewMoon
+        });
+        
         // Find the moon-info section and replace it with enhanced display
         const moonInfoSection = resultsDiv.querySelector('.moon-info');
         
@@ -540,7 +549,7 @@ class MoonPositionCalculator {
                             <strong>Altitude:</strong> ${moonData.altitude.toFixed(1)}°
                         </div>
                         <div class="info-item">
-                            <strong>Distance:</strong> ${(moonData.distance * 0.621371).toFixed(0)} mi
+                            <strong>Distance:</strong> ${moonData.distance.toFixed(0)} km
                         </div>
                         <div class="info-item">
                             <strong>Phase:</strong> ${formatMoonPhase(moonData.phase)}
@@ -832,7 +841,7 @@ class MoonPositionCalculator {
                         return {
                             azimuth: parseFloat(moonData.azimuth),
                             altitude: parseFloat(moonData.altitude),
-                            distance: parseFloat(moonData.distance) * 1.60934, // Convert km to miles
+                            distance: parseFloat(moonData.distance), // Keep in km for now
                             phase: moonData.moonphase || 'Unknown',
                             illuminated: moonData.illuminated || 0,
                             source: 'timeanddate.com API',
