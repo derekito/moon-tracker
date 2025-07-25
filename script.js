@@ -624,11 +624,29 @@ class MoonPositionCalculator {
                     enhancedTable.style.backgroundColor = 'yellow';
                     enhancedTable.style.padding = '20px';
                     enhancedTable.style.margin = '20px';
+                    enhancedTable.style.zIndex = '9999';
+                    enhancedTable.style.position = 'relative';
                     console.log('=== FORCED VISIBILITY DEBUG ===');
                     console.log('Enhanced table found and styled for visibility');
                     console.log('Enhanced table innerHTML:', enhancedTable.innerHTML.substring(0, 300));
+                    
+                    // Also style the parent moon-info section
+                    moonInfoSection.style.border = '3px solid blue';
+                    moonInfoSection.style.backgroundColor = 'lightgreen';
+                    moonInfoSection.style.padding = '10px';
+                    console.log('Parent moon-info section also styled for visibility');
+                    
+                    // Force text color and visibility
+                    const allTextElements = enhancedTable.querySelectorAll('*');
+                    allTextElements.forEach(el => {
+                        el.style.color = 'black';
+                        el.style.visibility = 'visible';
+                        el.style.display = 'block';
+                    });
+                    console.log('Forced all text elements to be black and visible');
                 } else {
                     console.log('ERROR: No enhanced-moon-info found after replacement!');
+                    console.log('Available elements in moonInfoSection:', moonInfoSection.innerHTML.substring(0, 500));
                 }
             } else {
                 // Fallback: create new element if none exists
