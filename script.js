@@ -518,48 +518,47 @@ class MoonPositionCalculator {
             return 'High in sky';
         };
         
-        // Update the basic display elements
-        document.getElementById('azimuth').textContent = `${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑`;
-        document.getElementById('altitude').textContent = `${moonData.altitude.toFixed(1)}°`;
-        document.getElementById('phase').textContent = formatMoonPhase(moonData.phase);
-        document.getElementById('distance').textContent = `${(moonData.distance * 0.621371).toFixed(0)} mi`;
-        
-        // Add enhanced information
+        // Get the results container
         const resultsDiv = document.getElementById('results');
+        
+        // Find the moon-info section and replace it with enhanced display
+        const moonInfoSection = resultsDiv.querySelector('.moon-info');
         
         // Create enhanced information display
         const enhancedInfo = document.createElement('div');
-        enhancedInfo.className = 'enhanced-moon-info';
+        enhancedInfo.className = 'moon-info';
         enhancedInfo.innerHTML = `
-            <div class="info-section">
-                <h4>Moon Details</h4>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Direction:</strong> ${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑
-                    </div>
-                    <div class="info-item">
-                        <strong>Altitude:</strong> ${moonData.altitude.toFixed(1)}°
-                    </div>
-                    <div class="info-item">
-                        <strong>Distance:</strong> ${(moonData.distance * 0.621371).toFixed(0)} mi
-                    </div>
-                    <div class="info-item">
-                        <strong>Phase:</strong> ${formatMoonPhase(moonData.phase)}
-                    </div>
-                    <div class="info-item">
-                        <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
-                    </div>
-                    <div class="info-item">
-                        <strong>Status:</strong> ${getVisibilityStatus(moonData.altitude)}
+            <h2>Moon Information</h2>
+            <div class="enhanced-moon-info">
+                <div class="info-section">
+                    <h4>Moon Details</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Direction:</strong> ${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑
+                        </div>
+                        <div class="info-item">
+                            <strong>Altitude:</strong> ${moonData.altitude.toFixed(1)}°
+                        </div>
+                        <div class="info-item">
+                            <strong>Distance:</strong> ${(moonData.distance * 0.621371).toFixed(0)} mi
+                        </div>
+                        <div class="info-item">
+                            <strong>Phase:</strong> ${formatMoonPhase(moonData.phase)}
+                        </div>
+                        <div class="info-item">
+                            <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Status:</strong> ${getVisibilityStatus(moonData.altitude)}
+                        </div>
                     </div>
                 </div>
             </div>
         `;
         
-        // Remove existing enhanced info if present
-        const existingEnhanced = resultsDiv.querySelector('.enhanced-moon-info');
-        if (existingEnhanced) {
-            existingEnhanced.remove();
+        // Replace the existing moon-info section with the enhanced version
+        if (moonInfoSection) {
+            moonInfoSection.replaceWith(enhancedInfo);
         }
         
         // Add data source information
