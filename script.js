@@ -687,10 +687,33 @@ class MoonPositionCalculator {
             
             console.log('Calling timeanddate.com API via proxy:', apiUrl);
             
-            // Use a reliable CORS proxy
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+            // Try multiple CORS proxies in case one fails
+            const proxies = [
+                `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+                `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(apiUrl)}`
+            ];
             
-            const response = await fetch(proxyUrl);
+            let response;
+            let lastError;
+            
+            for (const proxyUrl of proxies) {
+                try {
+                    console.log('Trying proxy:', proxyUrl);
+                    response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        console.log('Proxy succeeded:', proxyUrl);
+                        break;
+                    }
+                } catch (error) {
+                    console.log('Proxy failed:', proxyUrl, error.message);
+                    lastError = error;
+                }
+            }
+            
+            if (!response || !response.ok) {
+                throw new Error(`All proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
+            }
             
             if (!response.ok) {
                 throw new Error(`API request failed: ${response.status} ${response.statusText}`);
