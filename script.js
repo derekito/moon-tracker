@@ -546,52 +546,73 @@ class MoonPositionCalculator {
         // Create enhanced information display
         const enhancedInfo = document.createElement('div');
         enhancedInfo.className = 'moon-info';
-        enhancedInfo.innerHTML = `
-            <h2>Moon Information</h2>
-            <div class="enhanced-moon-info">
-                <div class="info-section">
-                    <h4>Moon Details</h4>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <strong>Direction:</strong> ${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑
+        
+        // Debug: Check if data exists before creating template
+        console.log('Creating template with data:', {
+            azimuth: moonData.azimuth,
+            altitude: moonData.altitude,
+            distance: moonData.distance,
+            phase: moonData.phase,
+            illuminated: moonData.illuminated,
+            moonrise: moonData.moonrise,
+            moonset: moonData.moonset,
+            nextFullMoon: moonData.nextFullMoon,
+            nextNewMoon: moonData.nextNewMoon
+        });
+        
+        // Create template with error handling
+        try {
+            enhancedInfo.innerHTML = `
+                <h2>Moon Information</h2>
+                <div class="enhanced-moon-info">
+                    <div class="info-section">
+                        <h4>Moon Details</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Direction:</strong> ${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Altitude:</strong> ${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Distance:</strong> ${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Phase:</strong> ${moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Status:</strong> ${moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A'}
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <strong>Altitude:</strong> ${moonData.altitude.toFixed(1)}°
-                        </div>
-                        <div class="info-item">
-                            <strong>Distance:</strong> ${moonData.distance.toFixed(0)} km
-                        </div>
-                        <div class="info-item">
-                            <strong>Phase:</strong> ${formatMoonPhase(moonData.phase)}
-                        </div>
-                        <div class="info-item">
-                            <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
-                        </div>
-                        <div class="info-item">
-                            <strong>Status:</strong> ${getVisibilityStatus(moonData.altitude)}
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4>Moon Events</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Moonrise Today:</strong> ${moonData.moonrise || 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Moonset Today:</strong> ${moonData.moonset || 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Next Full Moon:</strong> ${moonData.nextFullMoon || 'N/A'}
+                            </div>
+                            <div class="info-item">
+                                <strong>Next New Moon:</strong> ${moonData.nextNewMoon || 'N/A'}
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="info-section">
-                    <h4>Moon Events</h4>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <strong>Moonrise Today:</strong> ${moonData.moonrise || 'N/A'}
-                        </div>
-                        <div class="info-item">
-                            <strong>Moonset Today:</strong> ${moonData.moonset || 'N/A'}
-                        </div>
-                        <div class="info-item">
-                            <strong>Next Full Moon:</strong> ${moonData.nextFullMoon || 'N/A'}
-                        </div>
-                        <div class="info-item">
-                            <strong>Next New Moon:</strong> ${moonData.nextNewMoon || 'N/A'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
+            console.log('Template created successfully');
+        } catch (error) {
+            console.error('Error creating template:', error);
+            enhancedInfo.innerHTML = '<h2>Moon Information</h2><p>Error displaying data</p>';
+        }
         
         console.log('Created enhanced info with data:', {
             azimuth: moonData.azimuth,
