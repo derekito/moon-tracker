@@ -675,10 +675,10 @@ class MoonPositionCalculator {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // For now, let's use a known place ID for Los Angeles (298 is a common test ID)
-            // In a production app, we would map coordinates to the nearest known place
-            const placeId = '298'; // Los Angeles area
-            console.log('Using place ID:', placeId);
+            // Use coordinates directly as placeid - this should work according to the API docs
+            // The format should be "latitude,longitude" 
+            const placeId = `${lat},${lon}`;
+            console.log('Using coordinates as placeid:', placeId);
             
             // Now get the astronomical data using the place ID
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
