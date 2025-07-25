@@ -26,32 +26,50 @@ def get_moon_position():
         if not all([lat, lon, date]):
             return jsonify({'error': 'Missing required parameters: lat, lon, date'}), 400
         
-        # Build API request to timeanddate.com
+        # Parse the date string to get proper format
+        from datetime import datetime
+        date_obj = datetime.fromisoformat(date.replace('Z', '+00:00'))
+        
+        # Build API request to timeanddate.com using the correct endpoint
+        # Based on the documentation, we need to use the astrodata endpoint
         params = {
             'version': '3',
             'prettyprint': '1',
             'accesskey': API_ACCESS_KEY,
             'secretkey': API_SECRET_KEY,
             'placeid': f'{lat},{lon}',
-            'startdt': date,
-            'enddt': f'{date}T23:59:59',
-            'object': 'moon'
+            'startdt': date_obj.strftime('%Y-%m-%d'),
+            'enddt': date_obj.strftime('%Y-%m-%dT%H:%M:%S'),
+            'object': 'moon',
+            'types': 'astrodata'
         }
         
         print(f"Calling timeanddate.com API with params: {params}")
         
-        # Make request to timeanddate.com API
-        response = requests.get(f'{API_BASE_URL}/astro', params=params)
+        # Try the correct endpoint based on documentation
+        api_endpoints = [
+            f'{API_BASE_URL}/astrodata',
+            f'{API_BASE_URL}/astro',
+            f'{API_BASE_URL}/astronomy'
+        ]
         
-        if response.status_code != 200:
-            print(f"API Error: {response.status_code} - {response.text}")
-            return jsonify({'error': f'API request failed: {response.status_code}'}), 500
+        for endpoint in api_endpoints:
+            try:
+                print(f"Trying endpoint: {endpoint}")
+                response = requests.get(endpoint, params=params)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    print(f"API Response: {json.dumps(data, indent=2)}")
+                    return jsonify(data)
+                else:
+                    print(f"Endpoint {endpoint} failed: {response.status_code} - {response.text}")
+                    
+            except Exception as e:
+                print(f"Error with endpoint {endpoint}: {str(e)}")
+                continue
         
-        # Parse and return the response
-        data = response.json()
-        print(f"API Response: {json.dumps(data, indent=2)}")
-        
-        return jsonify(data)
+        return jsonify({'error': 'All API endpoints failed'}), 500
         
     except Exception as e:
         print(f"Server error: {str(e)}")

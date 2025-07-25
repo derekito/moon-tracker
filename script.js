@@ -208,14 +208,16 @@ class MoonPositionCalculator {
         
         let moonData;
         
-        // Use improved local calculation as primary method
-        // The API approach has CORS issues, so we'll rely on accurate local calculations
-        console.log('Using high-accuracy local astronomical calculation');
-        moonData = this.calculateMoonCoordinates(lat, lon, date);
-        moonData.source = 'High-accuracy local calculation';
-        
-        // Note: API integration available but CORS restrictions prevent reliable access
-        // Local calculation provides professional-grade accuracy using astronomical algorithms
+        // Try API first via our local server (no CORS issues)
+        try {
+            console.log('Attempting to use timeanddate.com API via local server...');
+            moonData = await this.getMoonPositionFromAPI(lat, lon, date);
+            console.log('API data received:', moonData);
+        } catch (error) {
+            console.log('API failed, falling back to local calculation:', error.message);
+            moonData = this.calculateMoonCoordinates(lat, lon, date);
+            moonData.source = 'Local calculation (API unavailable)';
+        }
         
         // Calculate moonrise/moonset for debugging
         const riseSetData = this.calculateMoonRiseSet(lat, lon, date);
@@ -663,114 +665,56 @@ class MoonPositionCalculator {
         return result;
     }
 
-    // Function to get moon position from timeanddate.com API via CORS proxy
+        // Function to get moon position from timeanddate.com API via local server
     async getMoonPositionFromAPI(lat, lon, date) {
         try {
             // Format date for API
-            const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+            const dateStr = date.toISOString();
             
-            // Build API request URL for timeanddate.com
-            // Based on the API documentation, we need to use the correct endpoint and format
-            const apiParams = new URLSearchParams({
-                version: '3',
-                prettyprint: '1',
-                accesskey: this.apiConfig.accessKey,
-                secretkey: this.apiConfig.secretKey,
-                placeid: `${lat},${lon}`,
-                startdt: dateStr,
-                enddt: dateStr + 'T23:59:59',
-                object: 'moon',
-                types: 'astro' // Specify we want astronomical data
+            // Call our local server (no CORS issues)
+            const params = new URLSearchParams({
+                lat: lat.toString(),
+                lon: lon.toString(),
+                date: dateStr
             });
             
-            // Try multiple CORS proxies in case one fails
-            const corsProxies = [
-                'https://api.allorigins.win/raw?url=',
-                'https://corsproxy.io/?',
-                'https://thingproxy.freeboard.io/fetch/',
-                'https://cors-anywhere.herokuapp.com/',
-                'https://cors.bridged.cc/'
-            ];
+            const url = `http://localhost:5000/api/moon-position?${params}`;
             
-            let lastError = null;
+            console.log('Calling local server API:', url);
             
-                        for (const proxy of corsProxies) {
-                try {
-                    console.log(`Trying CORS proxy: ${proxy}`);
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('API Response:', data);
+            
+            // Extract moon position data
+            if (data.locations && data.locations.length > 0) {
+                const location = data.locations[0];
+                if (location.astrodata && location.astrodata.length > 0) {
+                    // Find the moon data for the specific time
+                    const moonData = location.astrodata.find(item => 
+                        item.object === 'moon' && 
+                        item.time && 
+                        item.time.iso
+                    );
                     
-                    // Try different API endpoint formats
-                    const apiUrls = [
-                        `https://api.xmltime.com/astro?${apiParams}`,
-                        `https://api.xmltime.com/astronomy?${apiParams}`,
-                        `https://api.xmltime.com/astro/position?${apiParams}`
-                    ];
-                    
-                    for (const apiUrl of apiUrls) {
-                        try {
-                            const url = proxy + encodeURIComponent(apiUrl) + '&_t=' + Date.now();
-                            
-                            console.log(`Trying API URL: ${apiUrl}`);
-                            console.log('Calling timeanddate.com API via CORS proxy:', url);
-                            
-                            const response = await fetch(url, {
-                                method: 'GET',
-                                headers: {
-                                    'Origin': window.location.origin,
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                }
-                            });
-                            
-                            if (!response.ok) {
-                                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-                            }
-                            
-                            const data = await response.json();
-                            console.log('API Response:', data);
-                            
-                            // Extract moon position data
-                            if (data.locations && data.locations.length > 0) {
-                                const location = data.locations[0];
-                                if (location.astrodata && location.astrodata.length > 0) {
-                                    // Find the moon data for the specific time
-                                    const moonData = location.astrodata.find(item => 
-                                        item.object === 'moon' && 
-                                        item.time && 
-                                        item.time.iso
-                                    );
-                                    
-                                    if (moonData) {
-                                        return {
-                                            azimuth: parseFloat(moonData.azimuth),
-                                            altitude: parseFloat(moonData.altitude),
-                                            distance: parseFloat(moonData.distance) * 1.60934, // Convert miles to km
-                                            phase: moonData.phase || 'Unknown',
-                                            source: 'timeanddate.com API'
-                                        };
-                                    }
-                                }
-                            }
-                            
-                            // If we get here, no valid data found
-                            throw new Error('No moon data found in API response');
-                            
-                        } catch (error) {
-                            console.log(`API URL ${apiUrl} failed:`, error.message);
-                            continue; // Try next API URL
-                        }
+                    if (moonData) {
+                        return {
+                            azimuth: parseFloat(moonData.azimuth),
+                            altitude: parseFloat(moonData.altitude),
+                            distance: parseFloat(moonData.distance) * 1.60934, // Convert miles to km
+                            phase: moonData.phase || 'Unknown',
+                            source: 'timeanddate.com API'
+                        };
                     }
-                    
-                    // If all API URLs failed for this proxy, try next proxy
-                    throw new Error('All API endpoints failed for this proxy');
-                    
-                } catch (error) {
-                    console.log(`CORS proxy ${proxy} failed:`, error.message);
-                    lastError = error;
-                    continue; // Try next proxy
                 }
             }
             
-            // If all proxies failed, throw the last error
-            throw lastError || new Error('All CORS proxies failed');
+            throw new Error('No moon data found in API response');
             
         } catch (error) {
             console.error('API Error:', error);
