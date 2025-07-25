@@ -631,6 +631,23 @@ class MoonPositionCalculator {
             enhancedInfo.innerHTML = tableHTML;
             console.log('Table HTML set successfully');
             
+            // Debug: Check what's actually in the table after setting it
+            setTimeout(() => {
+                const debugTable = resultsDiv.querySelector('.enhanced-moon-info');
+                if (debugTable) {
+                    console.log('=== TABLE CONTENT DEBUG ===');
+                    console.log('Table innerHTML length:', debugTable.innerHTML.length);
+                    console.log('Table contains Direction:', debugTable.innerHTML.includes('Direction:'));
+                    console.log('Table contains 293.7:', debugTable.innerHTML.includes('293.7'));
+                    console.log('Table contains 7.3:', debugTable.innerHTML.includes('7.3'));
+                    console.log('Table contains 380537:', debugTable.innerHTML.includes('380537'));
+                    console.log('First 500 chars of table:', debugTable.innerHTML.substring(0, 500));
+                    console.log('=== END TABLE DEBUG ===');
+                } else {
+                    console.log('ERROR: No enhanced-moon-info found after setting HTML');
+                }
+            }, 100);
+            
         } catch (error) {
             console.error('Error creating table:', error);
             enhancedInfo.innerHTML = '<h2>Moon Information</h2><p>Error displaying data</p>';
