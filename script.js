@@ -3,6 +3,7 @@ class MoonPositionCalculator {
     // Add API configuration
     constructor() {
         this.timezoneData = this.getTimezoneData();
+        this.isCalculating = false; // Prevent duplicate calculations
         this.initializeEventListeners();
         this.setDefaultDateTime();
         this.populateTimezones();
@@ -188,12 +189,22 @@ class MoonPositionCalculator {
     }
 
     async calculateMoonPosition() {
+        // Prevent duplicate calculations
+        if (this.isCalculating) {
+            console.log('Calculation already in progress, skipping...');
+            return;
+        }
+        
+        this.isCalculating = true;
+        console.log('Starting moon position calculation...');
+        
         const lat = parseFloat(document.getElementById('latitude').value);
         const lon = parseFloat(document.getElementById('longitude').value);
         const dateTimeStr = document.getElementById('datetime').value;
         
         if (!lat || !lon || !dateTimeStr) {
             alert('Please enter valid latitude, longitude, and date/time.');
+            this.isCalculating = false;
             return;
         }
         
@@ -238,6 +249,10 @@ class MoonPositionCalculator {
         
         console.log('Final moon data:', moonData);
         console.log('Rise/Set debug info:', riseSetData);
+        
+        // Reset calculation flag
+        this.isCalculating = false;
+        console.log('Moon position calculation completed');
     }
 
     calculateMoonCoordinates(lat, lon, date) {
@@ -1187,9 +1202,6 @@ class MoonPositionCalculator {
 document.addEventListener('DOMContentLoaded', () => {
     const calculator = new MoonPositionCalculator();
     
-    // Test moon positioning after a short delay to ensure DOM is ready
-    setTimeout(() => {
-        console.log('Testing moon positioning on page load...');
-        calculator.testMoonPosition();
-    }, 1000);
+    // No automatic calculation - let user click the button
+    console.log('Moon Tracker initialized - ready for user input');
 }); 
