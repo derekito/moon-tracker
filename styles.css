@@ -400,6 +400,42 @@ header p {
     border: 1px solid #e1e5e9;
 }
 
+/* Enhanced Moon Information */
+.enhanced-moon-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-section h4 {
+    margin: 0 0 10px 0;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.info-item {
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.info-item strong {
+    color: #4a90e2;
+    display: block;
+    margin-bottom: 2px;
+}
+
 .legend-item {
     display: flex;
     align-items: center;

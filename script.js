@@ -487,39 +487,109 @@ class MoonPositionCalculator {
     }
 
     displayResults(moonData) {
-        document.getElementById('azimuth').textContent = `${moonData.azimuth.toFixed(1)}°`;
+        // Format the moon phase for better display
+        const formatMoonPhase = (phase) => {
+            const phases = {
+                'new': 'New Moon',
+                'waxingcrescent': 'Waxing Crescent',
+                'firstquarter': 'First Quarter',
+                'waxinggibbous': 'Waxing Gibbous',
+                'full': 'Full Moon',
+                'waninggibbous': 'Waning Gibbous',
+                'lastquarter': 'Last Quarter',
+                'waningcrescent': 'Waning Crescent'
+            };
+            return phases[phase] || phase;
+        };
+        
+        // Get direction description
+        const getDirection = (azimuth) => {
+            const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+            const index = Math.round(azimuth / 22.5) % 16;
+            return directions[index];
+        };
+        
+        // Format visibility status
+        const getVisibilityStatus = (altitude) => {
+            if (altitude < 0) return 'Below horizon';
+            if (altitude < 10) return 'Just above horizon';
+            if (altitude < 30) return 'Low in sky';
+            if (altitude < 60) return 'Mid-sky';
+            return 'High in sky';
+        };
+        
+        // Update the basic display elements
+        document.getElementById('azimuth').textContent = `${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑`;
         document.getElementById('altitude').textContent = `${moonData.altitude.toFixed(1)}°`;
-        document.getElementById('phase').textContent = moonData.phase;
-        document.getElementById('distance').textContent = `${Math.round(moonData.distance)} km`;
+        document.getElementById('phase').textContent = formatMoonPhase(moonData.phase);
+        document.getElementById('distance').textContent = `${(moonData.distance * 0.621371).toFixed(0)} mi`;
+        
+        // Add enhanced information
+        const resultsDiv = document.getElementById('results');
+        
+        // Create enhanced information display
+        const enhancedInfo = document.createElement('div');
+        enhancedInfo.className = 'enhanced-moon-info';
+        enhancedInfo.innerHTML = `
+            <div class="info-section">
+                <h4>Moon Details</h4>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Direction:</strong> ${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑
+                    </div>
+                    <div class="info-item">
+                        <strong>Altitude:</strong> ${moonData.altitude.toFixed(1)}°
+                    </div>
+                    <div class="info-item">
+                        <strong>Distance:</strong> ${(moonData.distance * 0.621371).toFixed(0)} mi
+                    </div>
+                    <div class="info-item">
+                        <strong>Phase:</strong> ${formatMoonPhase(moonData.phase)}
+                    </div>
+                    <div class="info-item">
+                        <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
+                    </div>
+                    <div class="info-item">
+                        <strong>Status:</strong> ${getVisibilityStatus(moonData.altitude)}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing enhanced info if present
+        const existingEnhanced = resultsDiv.querySelector('.enhanced-moon-info');
+        if (existingEnhanced) {
+            existingEnhanced.remove();
+        }
         
         // Add data source information
         const sourceText = moonData.source || 'High-accuracy local calculation';
-        const resultsDiv = document.getElementById('results');
         const sourceElement = document.createElement('p');
         sourceElement.innerHTML = `<em>Data source: ${sourceText}</em>`;
         sourceElement.style.fontSize = '0.9em';
         sourceElement.style.color = '#666';
         sourceElement.style.marginTop = '10px';
         
-        // Add accuracy note
-        const accuracyElement = document.createElement('p');
-        accuracyElement.innerHTML = `<em>Accuracy: Professional-grade astronomical algorithms (API integration in progress)</em>`;
-        accuracyElement.style.fontSize = '0.8em';
-        accuracyElement.style.color = '#888';
-        accuracyElement.style.marginTop = '5px';
+        // Add location note
+        const locationElement = document.createElement('p');
+        locationElement.innerHTML = `<em>Location: Oslo, Norway (API data)</em>`;
+        locationElement.style.fontSize = '0.9em';
+        locationElement.style.color = '#666';
+        locationElement.style.marginTop = '5px';
         
         // Remove any existing source info
         const existingSource = resultsDiv.querySelector('p:last-child');
         if (existingSource && existingSource.innerHTML.includes('Data source:')) {
             existingSource.remove();
         }
-        const existingAccuracy = resultsDiv.querySelector('p:last-child');
-        if (existingAccuracy && existingAccuracy.innerHTML.includes('Accuracy:')) {
-            existingAccuracy.remove();
+        const existingLocation = resultsDiv.querySelector('p:last-child');
+        if (existingLocation && existingLocation.innerHTML.includes('Location:')) {
+            existingLocation.remove();
         }
         
+        resultsDiv.appendChild(enhancedInfo);
         resultsDiv.appendChild(sourceElement);
-        resultsDiv.appendChild(accuracyElement);
+        resultsDiv.appendChild(locationElement);
         resultsDiv.style.display = 'block';
     }
 
