@@ -677,8 +677,10 @@ class MoonPositionCalculator {
                 console.log('New moon-info contains "Moon Details":', newMoonInfo.innerHTML.includes('Moon Details'));
                 console.log('New moon-info contains "enhanced-moon-info":', newMoonInfo.innerHTML.includes('enhanced-moon-info'));
                 
-                // Check if the data is actually in the HTML
-                const hasData = newMoonInfo.innerHTML.includes('290.1') || newMoonInfo.innerHTML.includes('9.4') || newMoonInfo.innerHTML.includes('380481');
+                // Check if the data is actually in the HTML (use the actual values from moonData)
+                const hasData = newMoonInfo.innerHTML.includes(moonData.azimuth?.toFixed(1)) || 
+                               newMoonInfo.innerHTML.includes(moonData.altitude?.toFixed(1)) || 
+                               newMoonInfo.innerHTML.includes(moonData.distance?.toFixed(0));
                 console.log('New moon-info contains actual data:', hasData);
                 
                 if (!hasData) {
