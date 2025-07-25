@@ -799,12 +799,29 @@ class MoonPositionCalculator {
     }
 
     updateMoonPosition3D(azimuth, altitude) {
+        console.log('=== MOON POSITIONING START ===');
+        console.log('Looking for moon element with ID: moonPosition');
+        
         const moonPosition = document.getElementById('moonPosition');
         
         if (!moonPosition) {
-            console.error('Moon position element not found!');
+            console.error('❌ Moon position element not found!');
+            console.log('Available elements with "moon" in ID:');
+            const allElements = document.querySelectorAll('[id*="moon"]');
+            allElements.forEach(el => console.log('-', el.id, el.tagName));
+            console.log('All elements in sky-dome:');
+            const skyDome = document.querySelector('.sky-dome');
+            if (skyDome) {
+                console.log(skyDome.innerHTML.substring(0, 500));
+            } else {
+                console.log('Sky dome not found either!');
+            }
             return;
         }
+        
+        console.log('✅ Moon position element found:', moonPosition);
+        console.log('Moon element tagName:', moonPosition.tagName);
+        console.log('Moon element className:', moonPosition.className);
         
         const skyDome = document.querySelector('.sky-dome');
         const domeSize = 400; // Should match CSS
@@ -914,6 +931,14 @@ class MoonPositionCalculator {
                 transform: moonPosition.style.transform,
                 opacity: moonPosition.style.opacity
             } : 'No moon position element'
+        });
+        
+        console.log('=== MOON POSITIONING COMPLETE ===');
+        console.log('Moon should now be visible at:', {
+            left: moonPosition.style.left,
+            top: moonPosition.style.top,
+            opacity: moonPosition.style.opacity,
+            border: moonPosition.style.border
         });
     }
 
