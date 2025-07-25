@@ -213,6 +213,13 @@ class MoonPositionCalculator {
             console.log('Attempting to use timeanddate.com API...');
             moonData = await this.getMoonPositionFromAPI(lat, lon, date);
             console.log('API data received:', moonData);
+            
+            // Ensure we're using API data, not local calculation
+            if (moonData.source && moonData.source.includes('API')) {
+                console.log('Using API data successfully');
+            } else {
+                console.log('API data received but source indicates local calculation');
+            }
         } catch (error) {
             console.log('API failed, falling back to local calculation:', error.message);
             moonData = this.calculateMoonCoordinates(lat, lon, date);
@@ -874,8 +881,8 @@ class MoonPositionCalculator {
             const today = new Date();
             const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
             
-            // Get rise/set times for today - try different API endpoints
-            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${todayStr}&isotime=1&utctime=1&types=rise,set`;
+            // Use the correct astronomy endpoint for moon events
+            const riseSetUrl = `https://api.xmltime.com/astronomy?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&startdt=${todayStr}&enddt=${todayStr}&types=rise,set&isotime=1&utctime=1`;
             
             console.log('Getting moon events from API:', riseSetUrl);
             
