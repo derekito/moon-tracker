@@ -663,7 +663,7 @@ class MoonPositionCalculator {
             if (newMoonInfo) {
                 console.log('New moon-info innerHTML length:', newMoonInfo.innerHTML.length);
                 console.log('New moon-info contains "Direction":', newMoonInfo.innerHTML.includes('Direction'));
-                console.log('New moon-info contains "380481":', newMoonInfo.innerHTML.includes('380481'));
+                console.log('New moon-info contains distance data:', newMoonInfo.innerHTML.includes('km'));
                 console.log('New moon-info contains "Moon Details":', newMoonInfo.innerHTML.includes('Moon Details'));
                 console.log('New moon-info contains "enhanced-moon-info":', newMoonInfo.innerHTML.includes('enhanced-moon-info'));
                 
