@@ -495,6 +495,9 @@ class MoonPositionCalculator {
     }
 
     displayResults(moonData) {
+        console.log('=== DISPLAY FUNCTION STARTED ===');
+        console.log('Display function called with data:', moonData);
+        
         // Format the moon phase for better display
         const formatMoonPhase = (phase) => {
             const phases = {
@@ -754,11 +757,20 @@ class MoonPositionCalculator {
         
         if (azimuthElement && altitudeElement && phaseElement && distanceElement) {
             console.log('Updating original table elements with data');
-            azimuthElement.textContent = `${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}`;
-            altitudeElement.textContent = `${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}`;
-            phaseElement.textContent = moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A';
-            distanceElement.textContent = `${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}`;
+            const directionText = `${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}`;
+            const altitudeText = `${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}`;
+            const phaseText = moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A';
+            const distanceText = `${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}`;
+            
+            console.log('Setting values:', { directionText, altitudeText, phaseText, distanceText });
+            
+            azimuthElement.textContent = directionText;
+            altitudeElement.textContent = altitudeText;
+            phaseElement.textContent = phaseText;
+            distanceElement.textContent = distanceText;
+            
             console.log('Original table elements updated');
+            console.log('After update - azimuth element textContent:', azimuthElement.textContent);
         } else {
             console.log('Original table elements not found - enhanced display should be used');
         }
