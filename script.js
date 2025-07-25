@@ -676,24 +676,11 @@ class MoonPositionCalculator {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Map user coordinates to the nearest available place
-            // For now, use a simple mapping based on the user's coordinates
-            let placeId;
-            
-            // Simple mapping: if user is in US, use a US place ID
-            if (lat >= 25 && lat <= 50 && lon >= -125 && lon <= -65) {
-                // US coordinates - use New York (place ID 198 from documentation)
-                placeId = '198';
-                console.log('Using US place ID (New York):', placeId);
-            } else if (lat >= 50 && lat <= 70 && lon >= -10 && lon <= 30) {
-                // European coordinates - use Oslo (place ID 187)
-                placeId = '187';
-                console.log('Using European place ID (Oslo):', placeId);
-            } else {
-                // Default to Oslo for other locations
-                placeId = '187';
-                console.log('Using default place ID (Oslo):', placeId);
-            }
+            // Use the working place ID for all locations
+            // Our API key only has access to place ID 187 (Oslo)
+            const placeId = '187';
+            console.log('Using available place ID (Oslo):', placeId);
+            console.log('Note: Showing moon position for Oslo, Norway (API access limited)');
             
             // Now get the astronomical data using the place ID
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
