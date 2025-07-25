@@ -575,48 +575,34 @@ class MoonPositionCalculator {
             nextNewMoon: moonData.nextNewMoon
         });
         
-        // Create template with error handling
+        // Create a simple, direct table approach
         try {
-            // Pre-calculate all values to ensure they exist
-            const directionValue = moonData.azimuth ? `${moonData.azimuth.toFixed(1)}° ${getDirection(moonData.azimuth)}↑` : 'N/A';
-            const altitudeValue = moonData.altitude ? `${moonData.altitude.toFixed(1)}°` : 'N/A';
-            const distanceValue = moonData.distance ? `${moonData.distance.toFixed(0)} km` : 'N/A';
-            const phaseValue = moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A';
-            const illuminatedValue = moonData.illuminated ? `${moonData.illuminated.toFixed(1)}%` : 'N/A';
-            const statusValue = moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A';
+            console.log('Creating simple table with data:', moonData);
             
-            console.log('Pre-calculated values:', {
-                directionValue,
-                altitudeValue,
-                distanceValue,
-                phaseValue,
-                illuminatedValue,
-                statusValue
-            });
-            
-            enhancedInfo.innerHTML = `
+            // Create the table HTML directly
+            const tableHTML = `
                 <h2>Moon Information</h2>
                 <div class="enhanced-moon-info">
                     <div class="info-section">
                         <h4>Moon Details</h4>
                         <div class="info-grid">
                             <div class="info-item">
-                                <strong>Direction:</strong> ${directionValue}
+                                <strong>Direction:</strong> ${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}
                             </div>
                             <div class="info-item">
-                                <strong>Altitude:</strong> ${altitudeValue}
+                                <strong>Altitude:</strong> ${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}
                             </div>
                             <div class="info-item">
-                                <strong>Distance:</strong> ${distanceValue}
+                                <strong>Distance:</strong> ${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}
                             </div>
                             <div class="info-item">
-                                <strong>Phase:</strong> ${phaseValue}
+                                <strong>Phase:</strong> ${moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A'}
                             </div>
                             <div class="info-item">
-                                <strong>Illuminated:</strong> ${illuminatedValue}
+                                <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
                             </div>
                             <div class="info-item">
-                                <strong>Status:</strong> ${statusValue}
+                                <strong>Status:</strong> ${moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A'}
                             </div>
                         </div>
                     </div>
@@ -640,9 +626,13 @@ class MoonPositionCalculator {
                     </div>
                 </div>
             `;
-            console.log('Template created successfully');
+            
+            console.log('Table HTML created:', tableHTML.substring(0, 200) + '...');
+            enhancedInfo.innerHTML = tableHTML;
+            console.log('Table HTML set successfully');
+            
         } catch (error) {
-            console.error('Error creating template:', error);
+            console.error('Error creating table:', error);
             enhancedInfo.innerHTML = '<h2>Moon Information</h2><p>Error displaying data</p>';
         }
         
@@ -677,10 +667,12 @@ class MoonPositionCalculator {
                 console.log('New moon-info contains "Moon Details":', newMoonInfo.innerHTML.includes('Moon Details'));
                 console.log('New moon-info contains "enhanced-moon-info":', newMoonInfo.innerHTML.includes('enhanced-moon-info'));
                 
-                // Check if the data is actually in the HTML (use the actual values from moonData)
-                const hasData = newMoonInfo.innerHTML.includes(moonData.azimuth?.toFixed(1)) || 
-                               newMoonInfo.innerHTML.includes(moonData.altitude?.toFixed(1)) || 
-                               newMoonInfo.innerHTML.includes(moonData.distance?.toFixed(0));
+                // Check if the data is actually in the HTML (look for key indicators)
+                const hasData = newMoonInfo.innerHTML.includes('Direction:') && 
+                               newMoonInfo.innerHTML.includes('Altitude:') && 
+                               newMoonInfo.innerHTML.includes('Distance:') &&
+                               newMoonInfo.innerHTML.includes('°') &&
+                               newMoonInfo.innerHTML.includes('km');
                 console.log('New moon-info contains actual data:', hasData);
                 
                 if (!hasData) {
