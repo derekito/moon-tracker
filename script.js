@@ -577,48 +577,50 @@ class MoonPositionCalculator {
         try {
             console.log('Creating simple table with data:', moonData);
             
-            // Create the table HTML directly
+            // Create the table HTML with two-column layout
             const tableHTML = `
                 <h2>Moon Information</h2>
                 <div class="enhanced-moon-info">
-                    <div class="info-section">
-                        <h4>Moon Details</h4>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <strong>Direction:</strong> ${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Altitude:</strong> ${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Distance:</strong> ${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Phase:</strong> ${moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Status:</strong> ${moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A'}
+                    <div class="moon-info-container">
+                        <div class="info-section">
+                            <h4>Moon Details</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <strong>Direction:</strong> ${moonData.azimuth ? moonData.azimuth.toFixed(1) + '° ' + getDirection(moonData.azimuth) + '↑' : 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Altitude:</strong> ${moonData.altitude ? moonData.altitude.toFixed(1) + '°' : 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Distance:</strong> ${moonData.distance ? moonData.distance.toFixed(0) + ' km' : 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Phase:</strong> ${moonData.phase ? formatMoonPhase(moonData.phase) : 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Illuminated:</strong> ${moonData.illuminated ? moonData.illuminated.toFixed(1) + '%' : 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Status:</strong> ${moonData.altitude ? getVisibilityStatus(moonData.altitude) : 'N/A'}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <h4>Moon Events</h4>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <strong>Moonrise Today:</strong> ${moonData.moonrise || 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Moonset Today:</strong> ${moonData.moonset || 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Next Full Moon:</strong> ${moonData.nextFullMoon || 'N/A'}
-                            </div>
-                            <div class="info-item">
-                                <strong>Next New Moon:</strong> ${moonData.nextNewMoon || 'N/A'}
+                        
+                        <div class="info-section">
+                            <h4>Moon Events</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <strong>Moonrise Today:</strong> ${moonData.moonrise || 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Moonset Today:</strong> ${moonData.moonset || 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Next Full Moon:</strong> ${moonData.nextFullMoon || 'N/A'}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Next New Moon:</strong> ${moonData.nextNewMoon || 'N/A'}
+                                </div>
                             </div>
                         </div>
                     </div>
