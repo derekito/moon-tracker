@@ -586,6 +586,9 @@ class MoonPositionCalculator {
         // Replace the existing moon-info section with the enhanced version
         if (moonInfoSection) {
             moonInfoSection.replaceWith(enhancedInfo);
+        } else {
+            // If no moon-info section found, append to results
+            resultsDiv.appendChild(enhancedInfo);
         }
         
         // Add data source information
@@ -613,7 +616,7 @@ class MoonPositionCalculator {
             existingLocation.remove();
         }
         
-        resultsDiv.appendChild(enhancedInfo);
+        // Don't append enhancedInfo again since we already replaced/added it
         resultsDiv.appendChild(sourceElement);
         resultsDiv.appendChild(locationElement);
         resultsDiv.style.display = 'block';
@@ -841,7 +844,7 @@ class MoonPositionCalculator {
                         return {
                             azimuth: parseFloat(moonData.azimuth),
                             altitude: parseFloat(moonData.altitude),
-                            distance: parseFloat(moonData.distance), // Keep in km for now
+                            distance: parseFloat(moonData.distance), // API returns km
                             phase: moonData.moonphase || 'Unknown',
                             illuminated: moonData.illuminated || 0,
                             source: 'timeanddate.com API',
@@ -871,8 +874,8 @@ class MoonPositionCalculator {
             const today = new Date();
             const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
             
-            // Get rise/set times for today
-            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${todayStr}&isotime=1&utctime=1`;
+            // Get rise/set times for today - try different API endpoints
+            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${todayStr}&isotime=1&utctime=1&types=rise,set`;
             
             console.log('Getting moon events from API:', riseSetUrl);
             
