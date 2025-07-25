@@ -669,24 +669,22 @@ class MoonPositionCalculator {
         return result;
     }
     
-    // Function to get moon position from timeanddate.com API via local server
+    // Function to get moon position from timeanddate.com API via public proxy
     async getMoonPositionFromAPI(lat, lon, date) {
         try {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Call our local server (no CORS issues)
-            const params = new URLSearchParams({
-                lat: lat.toString(),
-                lon: lon.toString(),
-                date: dateStr
-            });
+            // Build the timeanddate.com API URL
+            const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
+            const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${lat},${lon}&object=moon&interval=${interval}&isotime=1&utctime=1`;
             
-            const url = `http://localhost:8000/api/moon-position?${params}`;
+            console.log('Calling timeanddate.com API via proxy:', apiUrl);
             
-            console.log('Calling local server API:', url);
+            // Use a reliable CORS proxy
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
             
-            const response = await fetch(url);
+            const response = await fetch(proxyUrl);
             
             if (!response.ok) {
                 throw new Error(`API request failed: ${response.status} ${response.statusText}`);
