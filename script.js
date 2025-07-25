@@ -558,23 +558,6 @@ class MoonPositionCalculator {
             });
         }
         
-        // Create enhanced information display
-        const enhancedInfo = document.createElement('div');
-        enhancedInfo.className = 'moon-info';
-        
-        // Debug: Check if data exists before creating template
-        console.log('Creating template with data:', {
-            azimuth: moonData.azimuth,
-            altitude: moonData.altitude,
-            distance: moonData.distance,
-            phase: moonData.phase,
-            illuminated: moonData.illuminated,
-            moonrise: moonData.moonrise,
-            moonset: moonData.moonset,
-            nextFullMoon: moonData.nextFullMoon,
-            nextNewMoon: moonData.nextNewMoon
-        });
-        
         // Create a simple, direct table approach
         try {
             console.log('Creating simple table with data:', moonData);
@@ -628,7 +611,20 @@ class MoonPositionCalculator {
             `;
             
             console.log('Table HTML created:', tableHTML.substring(0, 200) + '...');
-            enhancedInfo.innerHTML = tableHTML;
+            
+            // IMPORTANT: Directly replace the existing moon-info content
+            if (moonInfoSection) {
+                moonInfoSection.innerHTML = tableHTML;
+                console.log('Directly replaced moon-info content');
+            } else {
+                // Fallback: create new element if none exists
+                const enhancedInfo = document.createElement('div');
+                enhancedInfo.className = 'moon-info';
+                enhancedInfo.innerHTML = tableHTML;
+                resultsDiv.appendChild(enhancedInfo);
+                console.log('Created new moon-info element');
+            }
+            
             console.log('Table HTML set successfully');
             
             // Debug: Check what's actually in the table after setting it
@@ -653,64 +649,15 @@ class MoonPositionCalculator {
             enhancedInfo.innerHTML = '<h2>Moon Information</h2><p>Error displaying data</p>';
         }
         
-        console.log('Created enhanced info with data:', {
-            azimuth: moonData.azimuth,
-            altitude: moonData.altitude,
-            distance: moonData.distance,
-            phase: moonData.phase,
-            moonrise: moonData.moonrise,
-            moonset: moonData.moonset
-        });
-        
-        // Replace the existing moon-info section with the enhanced version
-        if (moonInfoSection) {
-            console.log('=== REPLACEMENT TEST ===');
-            console.log('Replacing existing moon-info section');
-            console.log('Original section innerHTML length:', moonInfoSection.innerHTML.length);
-            
-            // Store the original content for comparison
-            const originalContent = moonInfoSection.innerHTML;
-            
-            // Replace the section
-            moonInfoSection.replaceWith(enhancedInfo);
-            
-            // Test: Check if the replacement worked
-            const newMoonInfo = resultsDiv.querySelector('.moon-info');
-            console.log('After replacement - found moon-info section:', !!newMoonInfo);
-            if (newMoonInfo) {
-                console.log('New moon-info innerHTML length:', newMoonInfo.innerHTML.length);
-                console.log('New moon-info contains "Direction":', newMoonInfo.innerHTML.includes('Direction'));
-                console.log('New moon-info contains distance data:', newMoonInfo.innerHTML.includes('km'));
-                console.log('New moon-info contains "Moon Details":', newMoonInfo.innerHTML.includes('Moon Details'));
-                console.log('New moon-info contains "enhanced-moon-info":', newMoonInfo.innerHTML.includes('enhanced-moon-info'));
-                
-                // Check if the data is actually in the HTML (look for key indicators)
-                const hasData = newMoonInfo.innerHTML.includes('Direction:') && 
-                               newMoonInfo.innerHTML.includes('Altitude:') && 
-                               newMoonInfo.innerHTML.includes('Distance:') &&
-                               newMoonInfo.innerHTML.includes('°') &&
-                               newMoonInfo.innerHTML.includes('km');
-                console.log('New moon-info contains actual data:', hasData);
-                
-                if (!hasData) {
-                    console.log('WARNING: Data not found in new moon-info section!');
-                    console.log('First 500 chars of new content:', newMoonInfo.innerHTML.substring(0, 500));
-                }
-            } else {
-                console.log('ERROR: No moon-info section found after replacement!');
-            }
-        } else {
-            console.log('No moon-info section found, appending to results');
-            resultsDiv.appendChild(enhancedInfo);
-            
-            // Test: Check if the append worked
-            const newMoonInfo = resultsDiv.querySelector('.moon-info');
-            console.log('After append - found moon-info section:', !!newMoonInfo);
+        // Simple verification that the table was updated
+        console.log('=== TABLE UPDATE VERIFICATION ===');
+        const updatedMoonInfo = resultsDiv.querySelector('.moon-info');
+        if (updatedMoonInfo) {
+            console.log('Updated moon-info innerHTML length:', updatedMoonInfo.innerHTML.length);
+            console.log('Updated moon-info contains Direction:', updatedMoonInfo.innerHTML.includes('Direction:'));
+            console.log('Updated moon-info contains enhanced-moon-info:', updatedMoonInfo.innerHTML.includes('enhanced-moon-info'));
+            console.log('Updated moon-info contains actual data:', updatedMoonInfo.innerHTML.includes('°') && updatedMoonInfo.innerHTML.includes('km'));
         }
-        
-        // Test: Check final state of results div
-        console.log('Final results div children count:', resultsDiv.children.length);
-        console.log('Final results div contains moon-info:', !!resultsDiv.querySelector('.moon-info'));
         
         // Test: Check if the enhanced-moon-info class exists
         const enhancedMoonInfo = resultsDiv.querySelector('.enhanced-moon-info');
@@ -730,14 +677,6 @@ class MoonPositionCalculator {
             console.log('Enhanced moon-info CSS visibility:', computedStyle.visibility);
             console.log('Enhanced moon-info CSS opacity:', computedStyle.opacity);
         }
-        
-        // Test: Check if any moon-info section is visible
-        const allMoonInfo = resultsDiv.querySelectorAll('.moon-info');
-        console.log('Total moon-info sections found:', allMoonInfo.length);
-        allMoonInfo.forEach((section, index) => {
-            const style = window.getComputedStyle(section);
-            console.log(`Moon-info section ${index} - display: ${style.display}, visibility: ${style.visibility}`);
-        });
         
         // Add data source information
         const sourceText = moonData.source || 'High-accuracy local calculation';
