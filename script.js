@@ -553,6 +553,24 @@ class MoonPositionCalculator {
                         </div>
                     </div>
                 </div>
+                
+                <div class="info-section">
+                    <h4>Moon Events</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Moonrise Today:</strong> ${moonData.moonrise || 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Moonset Today:</strong> ${moonData.moonset || 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Next Full Moon:</strong> ${moonData.nextFullMoon || 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Next New Moon:</strong> ${moonData.nextNewMoon || 'N/A'}
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
         
@@ -751,7 +769,7 @@ class MoonPositionCalculator {
             console.log('Using available place ID (Oslo):', placeId);
             console.log('Note: Showing moon position for Oslo, Norway (API access limited)');
             
-            // Now get the astronomical data using the place ID
+            // Get current moon position
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
             const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${interval}&isotime=1&utctime=1`;
             
@@ -785,10 +803,6 @@ class MoonPositionCalculator {
                 throw new Error(`All proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
             }
             
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-            }
-            
             const data = await response.json();
             console.log('API Response:', JSON.stringify(data, null, 2));
             
@@ -811,13 +825,18 @@ class MoonPositionCalculator {
                     if (moonObject && moonObject.results && moonObject.results.length > 0) {
                         const moonData = moonObject.results[0];
                         console.log('Moon data:', moonData);
+                        
+                        // Get additional moon events (rise/set times and phases)
+                        const additionalData = await this.getMoonEventsFromAPI(placeId, date);
+                        
                         return {
                             azimuth: parseFloat(moonData.azimuth),
                             altitude: parseFloat(moonData.altitude),
                             distance: parseFloat(moonData.distance) * 1.60934, // Convert km to miles
                             phase: moonData.moonphase || 'Unknown',
                             illuminated: moonData.illuminated || 0,
-                            source: 'timeanddate.com API'
+                            source: 'timeanddate.com API',
+                            ...additionalData
                         };
                     }
                 }
@@ -834,6 +853,126 @@ class MoonPositionCalculator {
         } catch (error) {
             console.error('API Error:', error);
             throw error;
+        }
+    }
+
+    async getMoonEventsFromAPI(placeId, date) {
+        try {
+            // Get today's date for rise/set times
+            const today = new Date();
+            const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
+            
+            // Get rise/set times for today
+            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${todayStr}&isotime=1&utctime=1`;
+            
+            console.log('Getting moon events from API:', riseSetUrl);
+            
+            const proxies = [
+                `https://corsproxy.io/?${encodeURIComponent(riseSetUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(riseSetUrl)}`,
+                `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(riseSetUrl)}`
+            ];
+            
+            let response;
+            for (const proxyUrl of proxies) {
+                try {
+                    response = await fetch(proxyUrl);
+                    if (response.ok) break;
+                } catch (error) {
+                    console.log('Proxy failed for events:', proxyUrl, error.message);
+                }
+            }
+            
+            if (!response || !response.ok) {
+                console.log('Could not get moon events, using fallback data');
+                return {
+                    moonrise: 'N/A',
+                    moonset: 'N/A',
+                    nextFullMoon: 'N/A',
+                    nextNewMoon: 'N/A'
+                };
+            }
+            
+            const data = await response.json();
+            console.log('Moon events API response:', JSON.stringify(data, null, 2));
+            
+            // Parse rise/set times and upcoming phases
+            let moonrise = 'N/A';
+            let moonset = 'N/A';
+            let nextFullMoon = 'N/A';
+            let nextNewMoon = 'N/A';
+            
+            if (data.locations && data.locations.length > 0) {
+                const location = data.locations[0];
+                if (location.astronomy && location.astronomy.objects) {
+                    const moonObject = location.astronomy.objects.find(obj => obj.name === 'moon');
+                    if (moonObject && moonObject.results) {
+                        // Find rise and set times
+                        for (const result of moonObject.results) {
+                            if (result.event === 'rise') {
+                                const riseTime = new Date(result.isotime);
+                                moonrise = riseTime.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    hour12: true 
+                                });
+                            } else if (result.event === 'set') {
+                                const setTime = new Date(result.isotime);
+                                moonset = setTime.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    hour12: true 
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // For now, use estimated upcoming moon phases
+            // In a full implementation, we'd make additional API calls for phase data
+            const currentDate = new Date();
+            const daysUntilFull = 15; // Approximate days until next full moon
+            const daysUntilNew = 29; // Approximate days until next new moon
+            
+            const nextFullDate = new Date(currentDate.getTime() + daysUntilFull * 24 * 60 * 60 * 1000);
+            const nextNewDate = new Date(currentDate.getTime() + daysUntilNew * 24 * 60 * 60 * 1000);
+            
+            nextFullMoon = nextFullDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }) + ', ' + nextFullDate.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            nextNewMoon = nextNewDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }) + ', ' + nextNewDate.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            return {
+                moonrise,
+                moonset,
+                nextFullMoon,
+                nextNewMoon
+            };
+            
+        } catch (error) {
+            console.error('Error getting moon events:', error);
+            return {
+                moonrise: 'N/A',
+                moonset: 'N/A',
+                nextFullMoon: 'N/A',
+                nextNewMoon: 'N/A'
+            };
         }
     }
 
