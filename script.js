@@ -214,11 +214,12 @@ class MoonPositionCalculator {
             moonData = await this.getMoonPositionFromAPI(lat, lon, date);
             console.log('API data received:', moonData);
             
-            // Ensure we're using API data, not local calculation
-            if (moonData.source && moonData.source.includes('API')) {
-                console.log('Using API data successfully');
+            // Check if we actually got API data or if local calculation was used
+            if (moonData.distance > 400000) {
+                console.log('WARNING: Distance indicates local calculation was used instead of API');
+                console.log('API should return ~377000 km, but got:', moonData.distance);
             } else {
-                console.log('API data received but source indicates local calculation');
+                console.log('Using API data successfully - distance looks correct');
             }
         } catch (error) {
             console.log('API failed, falling back to local calculation:', error.message);
@@ -540,6 +541,8 @@ class MoonPositionCalculator {
         // Find the moon-info section and replace it with enhanced display
         const moonInfoSection = resultsDiv.querySelector('.moon-info');
         
+        console.log('Found moon-info section:', !!moonInfoSection);
+        
         // Create enhanced information display
         const enhancedInfo = document.createElement('div');
         enhancedInfo.className = 'moon-info';
@@ -590,11 +593,21 @@ class MoonPositionCalculator {
             </div>
         `;
         
+        console.log('Created enhanced info with data:', {
+            azimuth: moonData.azimuth,
+            altitude: moonData.altitude,
+            distance: moonData.distance,
+            phase: moonData.phase,
+            moonrise: moonData.moonrise,
+            moonset: moonData.moonset
+        });
+        
         // Replace the existing moon-info section with the enhanced version
         if (moonInfoSection) {
+            console.log('Replacing existing moon-info section');
             moonInfoSection.replaceWith(enhancedInfo);
         } else {
-            // If no moon-info section found, append to results
+            console.log('No moon-info section found, appending to results');
             resultsDiv.appendChild(enhancedInfo);
         }
         
