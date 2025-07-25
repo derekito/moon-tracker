@@ -208,11 +208,16 @@ class MoonPositionCalculator {
         
         let moonData;
         
-        // Use high-accuracy local calculation for now
-        // The API integration needs more work - using professional-grade local calculation
-        console.log('Using high-accuracy astronomical calculation');
-        moonData = this.calculateMoonCoordinates(lat, lon, date);
-        moonData.source = 'Professional astronomical calculation (API integration in progress)';
+        // Try API first, then fall back to local calculation
+        try {
+            console.log('Attempting to use timeanddate.com API...');
+            moonData = await this.getMoonPositionFromAPI(lat, lon, date);
+            console.log('API data received:', moonData);
+        } catch (error) {
+            console.log('API failed, falling back to local calculation:', error.message);
+            moonData = this.calculateMoonCoordinates(lat, lon, date);
+            moonData.source = 'Local calculation (API unavailable)';
+        }
         
         // Calculate moonrise/moonset for debugging
         const riseSetData = this.calculateMoonRiseSet(lat, lon, date);
