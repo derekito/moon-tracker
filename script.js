@@ -70,6 +70,18 @@ class MoonPositionCalculator {
         };
     }
 
+    getLocationCoordinates(locationKey) {
+        const coordinates = {
+            "los-angeles": { lat: 34.0522, lon: -118.2437 },
+            "denver": { lat: 39.7392, lon: -104.9903 },
+            "new-york": { lat: 40.7128, lon: -74.0060 },
+            "london": { lat: 51.5074, lon: -0.1278 },
+            "sydney": { lat: -33.8688, lon: 151.2093 }
+        };
+        
+        return coordinates[locationKey] || { lat: 34.0522, lon: -118.2437 }; // Default to LA
+    }
+
     populateLocations() {
         const locationSelect = document.getElementById('location');
         locationSelect.innerHTML = '<option value="">Select a location...</option>';
@@ -170,12 +182,11 @@ class MoonPositionCalculator {
         this.isCalculating = true;
         console.log('Starting moon position calculation...');
         
-        const lat = parseFloat(document.getElementById('latitude').value);
-        const lon = parseFloat(document.getElementById('longitude').value);
+        const selectedLocationKey = document.getElementById('location').value;
         const dateTimeStr = document.getElementById('datetime').value;
         
-        if (!lat || !lon || !dateTimeStr) {
-            alert('Please enter valid latitude, longitude, and date/time.');
+        if (!selectedLocationKey || !dateTimeStr) {
+            alert('Please select a location and enter a valid date/time.');
             this.isCalculating = false;
             return;
         }
@@ -183,26 +194,28 @@ class MoonPositionCalculator {
         const date = new Date(dateTimeStr);
         
         console.log('Calculating moon position for:', {
-            latitude: lat,
-            longitude: lon,
+            location: selectedLocationKey,
             date: date.toISOString(),
             localTime: dateTimeStr
         });
         
         let moonData;
         
+        // Get the selected location data
+        const selectedLocation = this.locationData[selectedLocationKey];
+        if (!selectedLocation) {
+            alert('Invalid location selected. Please choose a location from the dropdown.');
+            this.isCalculating = false;
+            return;
+        }
+        
+        console.log('Using location:', selectedLocation);
+        
         // Try API first, then fall back to local calculation
         try {
             console.log('Attempting to use timeanddate.com API...');
-            
-            // Use selected location if available, otherwise use coordinates
-            if (this.selectedLocation) {
-                console.log('Using selected location:', this.selectedLocation.name);
-                moonData = await this.getMoonPositionFromAPI(this.selectedLocation.placeId, date);
-            } else {
-                console.log('No location selected, using coordinates');
-                moonData = await this.getMoonPositionFromAPI(lat, lon, date);
-            }
+            console.log('Using selected location:', selectedLocation.name);
+            moonData = await this.getMoonPositionFromAPI(selectedLocation.placeId, date);
             
             console.log('API data received:', moonData);
             
@@ -215,12 +228,15 @@ class MoonPositionCalculator {
             }
         } catch (error) {
             console.log('API failed, falling back to local calculation:', error.message);
-            moonData = this.calculateMoonCoordinates(lat, lon, date);
+            // For fallback, we need coordinates - use approximate coordinates for the location
+            const coords = this.getLocationCoordinates(selectedLocationKey);
+            moonData = this.calculateMoonCoordinates(coords.lat, coords.lon, date);
             moonData.source = 'Local calculation (API unavailable)';
         }
         
-        // Calculate moonrise/moonset for debugging
-        const riseSetData = this.calculateMoonRiseSet(lat, lon, date);
+        // Calculate moonrise/moonset for debugging using location coordinates
+        const coords = this.getLocationCoordinates(selectedLocationKey);
+        const riseSetData = this.calculateMoonRiseSet(coords.lat, coords.lon, date);
         
         // Display results
         this.displayResults(moonData);
