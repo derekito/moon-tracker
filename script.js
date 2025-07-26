@@ -11,8 +11,8 @@ class MoonPositionCalculator {
         
         // API Configuration - You'll need to get these from timeanddate.com
         this.apiConfig = {
-            accessKey: 'KRySdBTeW8', // Your provided access key
-            secretKey: 'NZTdzFBdJBPWKtYVYcWE', // Your provided secret key
+            accessKey: 'c1cmV79L6G', // Your provided access key
+            secretKey: 'Zutgzd8qtWO4AVVVX95g', // Your provided secret key
             baseUrl: 'https://api.xmltime.com'
         };
     }
@@ -983,7 +983,7 @@ class MoonPositionCalculator {
             
             // Get current moon position
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
-            const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&interval=${interval}&isotime=1&utctime=1`;
+            const apiUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=c1cmV79L6G&secretkey=Zutgzd8qtWO4AVVVX95g&placeid=${placeId}&object=moon&interval=${interval}&isotime=1&utctime=1`;
             
             console.log('Calling timeanddate.com API via proxy:', apiUrl);
             
@@ -1075,7 +1075,7 @@ class MoonPositionCalculator {
             const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
             
             // Use the correct astrodata endpoint for moon events
-            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=KRySdBTeW8&secretkey=NZTdzFBdJBPWKtYVYcWE&placeid=${placeId}&object=moon&startdt=${todayStr}&enddt=${todayStr}&types=rise,set&isotime=1&utctime=1`;
+            const riseSetUrl = `https://api.xmltime.com/astrodata?version=3&prettyprint=1&accesskey=c1cmV79L6G&secretkey=Zutgzd8qtWO4AVVVX95g&placeid=${placeId}&object=moon&startdt=${todayStr}&enddt=${todayStr}&types=rise,set&isotime=1&utctime=1`;
             
             console.log('Getting moon events from API:', riseSetUrl);
             
