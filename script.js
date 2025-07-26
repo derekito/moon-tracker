@@ -2,12 +2,12 @@
 class MoonPositionCalculator {
     // Add API configuration
     constructor() {
-        this.timezoneData = this.getTimezoneData();
+        this.locationData = this.getLocationData();
         this.isCalculating = false; // Prevent duplicate calculations
         this.initializeEventListeners();
         this.setDefaultDateTime();
-        this.populateTimezones();
-        this.detectUserTimezone();
+        this.populateLocations();
+        this.detectUserLocation();
         
         // API Configuration - You'll need to get these from timeanddate.com
         this.apiConfig = {
@@ -26,116 +26,87 @@ class MoonPositionCalculator {
             this.testTimeAndDateCase();
         });
 
-
-
-        document.getElementById('timezone').addEventListener('change', (e) => {
-            this.updateCoordinatesFromTimezone(e.target.value);
+        document.getElementById('location').addEventListener('change', (e) => {
+            this.updateLocation(e.target.value);
         });
 
         document.getElementById('detectLocationBtn').addEventListener('click', () => {
             this.detectUserLocation();
         });
-        
-
     }
 
-    getTimezoneData() {
+    getLocationData() {
         return {
-            "America/New_York": { lat: 40.7128, lon: -74.0060, name: "Eastern Time (US & Canada)" },
-            "America/Chicago": { lat: 41.8781, lon: -87.6298, name: "Central Time (US & Canada)" },
-            "America/Denver": { lat: 39.7392, lon: -104.9903, name: "Mountain Time (US & Canada)" },
-            "America/Los_Angeles": { lat: 34.0522, lon: -118.2437, name: "Pacific Time (US & Canada)" },
-            "America/Anchorage": { lat: 61.2181, lon: -149.9003, name: "Alaska Time" },
-            "Pacific/Honolulu": { lat: 21.3069, lon: -157.8583, name: "Hawaii Time" },
-            "Europe/London": { lat: 51.5074, lon: -0.1278, name: "London" },
-            "Europe/Paris": { lat: 48.8566, lon: 2.3522, name: "Paris" },
-            "Europe/Berlin": { lat: 52.5200, lon: 13.4050, name: "Berlin" },
-            "Europe/Moscow": { lat: 55.7558, lon: 37.6176, name: "Moscow" },
-            "Asia/Tokyo": { lat: 35.6762, lon: 139.6503, name: "Tokyo" },
-            "Asia/Shanghai": { lat: 31.2304, lon: 121.4737, name: "Shanghai" },
-            "Asia/Seoul": { lat: 37.5665, lon: 126.9780, name: "Seoul" },
-            "Asia/Singapore": { lat: 1.3521, lon: 103.8198, name: "Singapore" },
-            "Asia/Dubai": { lat: 25.2048, lon: 55.2708, name: "Dubai" },
-            "Asia/Kolkata": { lat: 20.5937, lon: 78.9629, name: "India" },
-            "Australia/Sydney": { lat: -33.8688, lon: 151.2093, name: "Sydney" },
-            "Australia/Melbourne": { lat: -37.8136, lon: 144.9631, name: "Melbourne" },
-            "Australia/Perth": { lat: -31.9505, lon: 115.8605, name: "Perth" },
-            "Pacific/Auckland": { lat: -36.8485, lon: 174.7633, name: "Auckland" },
-            "America/Toronto": { lat: 43.6532, lon: -79.3832, name: "Toronto" },
-            "America/Vancouver": { lat: 49.2827, lon: -123.1207, name: "Vancouver" },
-            "America/Mexico_City": { lat: 19.4326, lon: -99.1332, name: "Mexico City" },
-            "America/Sao_Paulo": { lat: -23.5505, lon: -46.6333, name: "São Paulo" },
-            "America/Buenos_Aires": { lat: -34.6118, lon: -58.3960, name: "Buenos Aires" },
-            "Africa/Cairo": { lat: 30.0444, lon: 31.2357, name: "Cairo" },
-            "Africa/Johannesburg": { lat: -26.2041, lon: 28.0473, name: "Johannesburg" },
-            "Africa/Lagos": { lat: 6.5244, lon: 3.3792, name: "Lagos" }
+            "los-angeles": { 
+                placeId: "137", 
+                name: "Los Angeles, CA", 
+                country: "United States",
+                timezone: "America/Los_Angeles"
+            },
+            "denver": { 
+                placeId: "75", 
+                name: "Denver, CO", 
+                country: "United States",
+                timezone: "America/Denver"
+            },
+            "new-york": { 
+                placeId: "179", 
+                name: "New York, NY", 
+                country: "United States",
+                timezone: "America/New_York"
+            },
+            "london": { 
+                placeId: "136", 
+                name: "London, UK", 
+                country: "United Kingdom",
+                timezone: "Europe/London"
+            },
+            "sydney": { 
+                placeId: "240", 
+                name: "Sydney, AUS", 
+                country: "Australia",
+                timezone: "Australia/Sydney"
+            }
         };
     }
 
-    populateTimezones() {
-        const timezoneSelect = document.getElementById('timezone');
-        timezoneSelect.innerHTML = '<option value="">Select a timezone...</option>';
+    populateLocations() {
+        const locationSelect = document.getElementById('location');
+        locationSelect.innerHTML = '<option value="">Select a location...</option>';
         
-        Object.entries(this.timezoneData).forEach(([timezone, data]) => {
+        Object.entries(this.locationData).forEach(([key, data]) => {
             const option = document.createElement('option');
-            option.value = timezone;
-            option.textContent = `${data.name} (${timezone})`;
-            timezoneSelect.appendChild(option);
+            option.value = key;
+            option.textContent = data.name;
+            locationSelect.appendChild(option);
         });
     }
 
-    async detectUserTimezone() {
-        try {
-            // First try to get timezone from browser
-            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            
-            if (userTimezone && this.timezoneData[userTimezone]) {
-                document.getElementById('timezone').value = userTimezone;
-                this.updateCoordinatesFromTimezone(userTimezone);
-                return;
-            }
 
-            // If browser timezone not in our data, try IP-based detection
-            await this.detectLocationFromIP();
-        } catch (error) {
-            console.log('Could not detect timezone automatically');
-        }
-    }
 
     async detectLocationFromIP() {
         try {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
             
-            if (data.timezone && this.timezoneData[data.timezone]) {
-                document.getElementById('timezone').value = data.timezone;
-                this.updateCoordinatesFromTimezone(data.timezone);
-            } else if (data.latitude && data.longitude) {
-                // If we have coordinates but no matching timezone, find closest one
-                const closestTimezone = this.findClosestTimezone(data.latitude, data.longitude);
-                if (closestTimezone) {
-                    document.getElementById('timezone').value = closestTimezone;
-                    this.updateCoordinatesFromTimezone(closestTimezone);
-                }
-            }
+            // For now, default to Los Angeles since we don't have coordinates for all locations
+            // In a real implementation, you would map IP location to closest available location
+            const defaultLocation = 'los-angeles';
+            document.getElementById('location').value = defaultLocation;
+            this.updateLocation(defaultLocation);
+            console.log('IP detection defaulted to:', defaultLocation);
         } catch (error) {
             console.log('Could not detect location from IP');
         }
     }
 
-    findClosestTimezone(lat, lon) {
-        let closestTimezone = null;
+        findClosestLocation(lat, lon) {
+        let closestLocation = null;
         let minDistance = Infinity;
-
-        Object.entries(this.timezoneData).forEach(([timezone, data]) => {
-            const distance = this.calculateDistance(lat, lon, data.lat, data.lon);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestTimezone = timezone;
-            }
-        });
-
-        return closestTimezone;
+        
+        // For now, return a default location since we don't have coordinates for all locations
+        // In a real implementation, you would have coordinates for each location
+        return 'los-angeles'; // Default to Los Angeles
     }
 
     calculateDistance(lat1, lon1, lat2, lon2) {
@@ -149,11 +120,12 @@ class MoonPositionCalculator {
         return R * c;
     }
 
-    updateCoordinatesFromTimezone(timezone) {
-        if (timezone && this.timezoneData[timezone]) {
-            const data = this.timezoneData[timezone];
-            document.getElementById('latitude').value = data.lat;
-            document.getElementById('longitude').value = data.lon;
+    updateLocation(locationKey) {
+        if (locationKey && this.locationData[locationKey]) {
+            const data = this.locationData[locationKey];
+            // Store the selected location for API calls
+            this.selectedLocation = data;
+            console.log('Location updated:', data);
         }
     }
 
@@ -165,11 +137,11 @@ class MoonPositionCalculator {
                 });
                 
                 const { latitude, longitude } = position.coords;
-                const closestTimezone = this.findClosestTimezone(latitude, longitude);
+                const closestLocation = this.findClosestLocation(latitude, longitude);
                 
-                if (closestTimezone) {
-                    document.getElementById('timezone').value = closestTimezone;
-                    this.updateCoordinatesFromTimezone(closestTimezone);
+                if (closestLocation) {
+                    document.getElementById('location').value = closestLocation;
+                    this.updateLocation(closestLocation);
                 }
             } catch (error) {
                 console.log('Could not get user location');
@@ -222,7 +194,16 @@ class MoonPositionCalculator {
         // Try API first, then fall back to local calculation
         try {
             console.log('Attempting to use timeanddate.com API...');
-            moonData = await this.getMoonPositionFromAPI(lat, lon, date);
+            
+            // Use selected location if available, otherwise use coordinates
+            if (this.selectedLocation) {
+                console.log('Using selected location:', this.selectedLocation.name);
+                moonData = await this.getMoonPositionFromAPI(this.selectedLocation.placeId, date);
+            } else {
+                console.log('No location selected, using coordinates');
+                moonData = await this.getMoonPositionFromAPI(lat, lon, date);
+            }
+            
             console.log('API data received:', moonData);
             
             // Check if we actually got API data or if local calculation was used
@@ -966,16 +947,23 @@ class MoonPositionCalculator {
     }
     
     // Function to get moon position from timeanddate.com API via public proxy
-    async getMoonPositionFromAPI(lat, lon, date) {
+    async getMoonPositionFromAPI(placeIdOrLat, date, lon = null) {
         try {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Use the working place ID for all locations
-            // Our API key only has access to place ID 187 (Oslo)
-            const placeId = '187';
-            console.log('Using available place ID (Oslo):', placeId);
-            console.log('Note: Showing moon position for Oslo, Norway (API access limited)');
+            // Determine if we're using placeId or coordinates
+            let placeId;
+            if (typeof placeIdOrLat === 'string' && placeIdOrLat.match(/^\d+$/)) {
+                // It's a placeId
+                placeId = placeIdOrLat;
+                console.log('Using place ID:', placeId);
+            } else {
+                // It's coordinates, use the working place ID for all locations
+                placeId = '187';
+                console.log('Using available place ID (Oslo):', placeId);
+                console.log('Note: Showing moon position for Oslo, Norway (API access limited)');
+            }
             
             // Get current moon position
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
