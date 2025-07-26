@@ -576,6 +576,17 @@ class MoonPositionCalculator {
         // Create a simple, direct table approach
         try {
             console.log('Creating simple table with data:', moonData);
+            console.log('=== MOON DATA DEBUG ===');
+            console.log('moonData.azimuth:', moonData.azimuth);
+            console.log('moonData.altitude:', moonData.altitude);
+            console.log('moonData.distance:', moonData.distance);
+            console.log('moonData.phase:', moonData.phase);
+            console.log('moonData.illuminated:', moonData.illuminated);
+            console.log('moonData.moonrise:', moonData.moonrise);
+            console.log('moonData.moonset:', moonData.moonset);
+            console.log('moonData.nextFullMoon:', moonData.nextFullMoon);
+            console.log('moonData.nextNewMoon:', moonData.nextNewMoon);
+            console.log('=== END MOON DATA DEBUG ===');
             
             // Create the table HTML with two-column layout
             const tableHTML = `
@@ -628,6 +639,14 @@ class MoonPositionCalculator {
             `;
             
             console.log('Table HTML created:', tableHTML.substring(0, 200) + '...');
+            console.log('=== TEMPLATE DEBUG ===');
+            console.log('Template contains 353.1:', tableHTML.includes('353.1'));
+            console.log('Template contains -13:', tableHTML.includes('-13'));
+            console.log('Template contains 381398:', tableHTML.includes('381398'));
+            console.log('Template contains 1.8:', tableHTML.includes('1.8'));
+            console.log('Template contains 6:30 AM:', tableHTML.includes('6:30 AM'));
+            console.log('Template contains 8:45 PM:', tableHTML.includes('8:45 PM'));
+            console.log('=== END TEMPLATE DEBUG ===');
             
             // IMPORTANT: Directly replace the existing moon-info content
             if (moonInfoSection) {
