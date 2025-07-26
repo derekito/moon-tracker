@@ -741,9 +741,13 @@ class MoonPositionCalculator {
         sourceElement.style.color = '#666';
         sourceElement.style.marginTop = '10px';
         
-        // Add location note
+        // Add location note - show the user's selected location
+        const selectedLocationKey = document.getElementById('location').value;
+        const selectedLocation = this.locationData[selectedLocationKey];
+        const locationName = selectedLocation ? selectedLocation.name : 'Unknown Location';
+        
         const locationElement = document.createElement('p');
-        locationElement.innerHTML = `<em>Location: Oslo, Norway (API data)</em>`;
+        locationElement.innerHTML = `<em>Location: ${locationName} (API data from Oslo, Norway)</em>`;
         locationElement.style.fontSize = '0.9em';
         locationElement.style.color = '#666';
         locationElement.style.marginTop = '5px';
