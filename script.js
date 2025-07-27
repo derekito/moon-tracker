@@ -228,7 +228,7 @@ class MoonPositionCalculator {
         try {
             console.log('Attempting to use timeanddate.com API...');
             console.log('Using selected location:', selectedLocation.name);
-            moonData = await this.getMoonPositionFromAPI(selectedLocation.placeId, date);
+            moonData = await this.getMoonPositionFromAPI(selectedLocation.placeId, date, selectedLocation);
             
             console.log('API data received:', moonData);
             
@@ -980,14 +980,15 @@ class MoonPositionCalculator {
     }
     
     // Function to get moon position from timeanddate.com API via public proxy
-    async getMoonPositionFromAPI(placeIdOrLat, date, lon = null) {
+    async getMoonPositionFromAPI(placeIdOrLat, date, selectedLocation = null) {
         try {
             // Format date for API
             const dateStr = date.toISOString();
             
             // Use the selected location's place ID for the API call
-            const placeId = selectedLocation.placeId;
-            console.log('Using place ID for', selectedLocation.name + ':', placeId);
+            const placeId = selectedLocation ? selectedLocation.placeId : placeIdOrLat;
+            const locationName = selectedLocation ? selectedLocation.name : 'Unknown';
+            console.log('Using place ID for', locationName + ':', placeId);
             
             // Get current moon position
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
