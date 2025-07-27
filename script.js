@@ -38,31 +38,31 @@ class MoonPositionCalculator {
     getLocationData() {
         return {
             "los-angeles": { 
-                placeId: "187", // Using Oslo as fallback since LA is restricted
+                placeId: "137", 
                 name: "Los Angeles, CA", 
                 country: "United States",
                 timezone: "America/Los_Angeles"
             },
             "denver": { 
-                placeId: "187", // Using Oslo as fallback since Denver is restricted
+                placeId: "75", 
                 name: "Denver, CO", 
                 country: "United States",
                 timezone: "America/Denver"
             },
             "new-york": { 
-                placeId: "187", // Using Oslo as fallback since NY is restricted
+                placeId: "179", 
                 name: "New York, NY", 
                 country: "United States",
                 timezone: "America/New_York"
             },
             "london": { 
-                placeId: "187", // Using Oslo as fallback since London is restricted
+                placeId: "136", 
                 name: "London, UK", 
                 country: "United Kingdom",
                 timezone: "Europe/London"
             },
             "sydney": { 
-                placeId: "187", // Using Oslo as fallback since Sydney is restricted
+                placeId: "240", 
                 name: "Sydney, AUS", 
                 country: "Australia",
                 timezone: "Australia/Sydney"
@@ -747,7 +747,7 @@ class MoonPositionCalculator {
         const locationName = selectedLocation ? selectedLocation.name : 'Unknown Location';
         
         const locationElement = document.createElement('p');
-        locationElement.innerHTML = `<em>Location: ${locationName} (API data from Oslo, Norway)</em>`;
+        locationElement.innerHTML = `<em>Location: ${locationName} (API data)</em>`;
         locationElement.style.fontSize = '0.9em';
         locationElement.style.color = '#666';
         locationElement.style.marginTop = '5px';
@@ -985,10 +985,9 @@ class MoonPositionCalculator {
             // Format date for API
             const dateStr = date.toISOString();
             
-            // Use the working place ID (Oslo) for all locations since others are restricted
-            const placeId = '187'; // Oslo, Norway - this place ID works
-            console.log('Using working place ID (Oslo):', placeId);
-            console.log('Note: Showing moon position for Oslo, Norway (other locations restricted)');
+            // Use the selected location's place ID for the API call
+            const placeId = selectedLocation.placeId;
+            console.log('Using place ID for', selectedLocation.name + ':', placeId);
             
             // Get current moon position
             const interval = new Date(dateStr).toISOString().slice(0, 19).replace('T', 'T');
